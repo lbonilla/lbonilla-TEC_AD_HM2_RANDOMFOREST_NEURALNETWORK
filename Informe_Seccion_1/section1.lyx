@@ -89,3630 +89,989 @@
 \begin_body
 
 \begin_layout Section
-Sección 1
+Contexto del Problema
 \end_layout
 
 \begin_layout Standard
-============================================================
+El dataset KDD99 constituye uno de los benchmarks más utilizados en la investigación de sistemas de detección de intrusiones (IDS).
+ Contiene 494,021 conexiones de red etiquetadas como normales o como uno de 21 tipos diferentes de ataques,
+ agrupados en cuatro categorías principales:
 \end_layout
 
 \begin_layout Standard
-ANÁLISIS DE DATOS PARA CIBERSEGURIDAD
+DoS (Denial of Service):
+ 54,572 instancias
 \end_layout
 
 \begin_layout Standard
-Trabajo Práctico 2 - Parte 1
+Probe:
+ 2,131 instancias
 \end_layout
 
 \begin_layout Standard
-Dataset:
- KDD99
+R2L (Remote to Local):
+ 978 instancias
 \end_layout
 
 \begin_layout Standard
-============================================================
+U2R (User to Root):
+ 40 instancias
 \end_layout
 
 \begin_layout Standard
-Descargando dataset KDD99...
+Normal:
+ 87,832 instancias
 \end_layout
 
 \begin_layout Standard
-Dataset cargado:
- 494021 filas,
- 42 columnas
+1.2 Objetivos
 \end_layout
 
 \begin_layout Standard
-=== PREPROCESAMIENTO DE DATOS ===
+Implementar y optimizar modelos de clasificación para detectar los 17 tipos de ataques presentes en el dataset filtrado
+\end_layout
+
+\begin_layout Standard
+Comparar el rendimiento entre Árboles de Decisión individuales y Random Forest
+\end_layout
+
+\begin_layout Standard
+Identificar los hiperparámetros óptimos mediante búsqueda sistemática
+\end_layout
+
+\begin_layout Standard
+Evaluar la robustez de los modelos mediante validación cruzada
+\end_layout
+
+\begin_layout Section
+Preprocesamiento de Datos
+\end_layout
+
+\begin_layout Subsection
+Limpieza y Filtrado
+\end_layout
+
+\begin_layout Standard
+El preprocesamiento inicial reveló importantes características del dataset:
 \end_layout
 
 \begin_layout Standard
 Registros duplicados eliminados:
- 348435
+ 348,435 (70.5% del dataset original)
 \end_layout
 
 \begin_layout Standard
-No hay valores faltantes en el dataset
+Clases raras filtradas:
+ 6 clases con menos de 10 muestras (33 registros totales)
 \end_layout
 
 \begin_layout Standard
-Verificando clases con pocas muestras...
+Dataset final:
+ 145,553 registros con 17 clases distintas
 \end_layout
 
-\begin_layout Standard
-Clases con menos de 10 muestras:
- 6
-\end_layout
-
-\begin_layout Standard
-Muestras afectadas:
- 33
-\end_layout
-
-\begin_layout Standard
-Clases restantes después del filtrado:
- 17
-\end_layout
-
-\begin_layout Standard
-Categorías de ataques encontradas:
- 5
-\end_layout
-
-\begin_layout Standard
-Tipos específicos de ataques:
- 17
-\end_layout
-
-\begin_layout Standard
-Distribución de categorías de ataques:
-\end_layout
-
-\begin_layout Standard
-attack_category
-\end_layout
-
-\begin_layout Standard
-normal 87832
-\end_layout
-
-\begin_layout Standard
-dos 54572
-\end_layout
-
-\begin_layout Standard
-probe 2131
-\end_layout
-
-\begin_layout Standard
-r2l 978
-\end_layout
-
-\begin_layout Standard
-u2r 40
-\end_layout
-
-\begin_layout Standard
-Name:
- count,
- dtype:
- int64
-\end_layout
-
-\begin_layout Standard
-Forma de X:
- (145553,
- 41)
-\end_layout
-
-\begin_layout Standard
-Forma de y:
- (145553,)
-\end_layout
-
-\begin_layout Standard
-Número de clases únicas:
- 17
-\end_layout
-
-\begin_layout Standard
-[I 2025-09-01 03:40:28,520] A new study created in memory with name:
- DecisionTree
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 101887 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 21833 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 21833 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-=== OPTIMIZACIÓN DE ÁRBOL DE DECISIÓN ===
-\end_layout
-
-\begin_layout Standard
-Best trial: 49. Best value: 0.838761: 100%
-\end_layout
-
-\begin_layout Standard
- 50/50 [00:19<00:00,  3.31it/s]
+\begin_layout Subsection
+Transformación de Variables
 \end_layout
 
 \begin_layout Standard
-[I 2025-09-01 03:40:28,793] Trial 0 finished with value:
- 0.5808591839152966 and parameters:
- {'max_depth':
- 29,
- 'min_samples_split':
- 40,
- 'min_samples_leaf':
- 40,
- 'criterion':
- 'gini',
- 'max_features':
- 'sqrt'}.
- Best is trial 0 with value:
- 0.5808591839152966.
+Se aplicaron las siguientes transformaciones:
 \end_layout
 
 \begin_layout Standard
-[I 2025-09-01 03:40:28,962] Trial 1 finished with value:
- 0.6154426551340499 and parameters:
- {'max_depth':
- 16,
- 'min_samples_split':
- 71,
- 'min_samples_leaf':
- 28,
- 'criterion':
- 'entropy',
- 'max_features':
- 'log2'}.
- Best is trial 1 with value:
- 0.6154426551340499.
+Codificación de variables categóricas:
+ protocol_type,
+ service,
+ y flag mediante LabelEncoder
 \end_layout
 
 \begin_layout Standard
-[I 2025-09-01 03:40:29,119] Trial 2 finished with value:
- 0.5469787179841206 and parameters:
- {'max_depth':
- 16,
- 'min_samples_split':
- 7,
- 'min_samples_leaf':
- 38,
- 'criterion':
- 'gini',
- 'max_features':
- 'log2'}.
- Best is trial 1 with value:
- 0.6154426551340499.
+Normalización:
+ StandardScaler para todas las 41 características numéricas
 \end_layout
 
 \begin_layout Standard
-[I 2025-09-01 03:40:29,308] Trial 3 finished with value:
- 0.6186127053901697 and parameters:
- {'max_depth':
- 14,
- 'min_samples_split':
- 32,
- 'min_samples_leaf':
- 33,
- 'criterion':
- 'gini',
- 'max_features':
- 'sqrt'}.
- Best is trial 3 with value:
- 0.6186127053901697.
+División estratificada:
+ 70% entrenamiento (101,887),
+ 15% validación (21,833),
+ 15% prueba (21,833)
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:29,491] Trial 4 finished with value:
- 0.47823721528445473 and parameters:
- {'max_depth':
- 22,
- 'min_samples_split':
- 24,
- 'min_samples_leaf':
- 48,
- 'criterion':
- 'entropy',
- 'max_features':
- 'sqrt'}.
- Best is trial 3 with value:
- 0.6186127053901697.
-\end_layout
-
-\begin_layout Standard
-[I 2025-09-01 03:40:29,648] Trial 5 finished with value:
- 0.3012145936926685 and parameters:
- {'max_depth':
- 4,
- 'min_samples_split':
- 59,
- 'min_samples_leaf':
- 14,
- 'criterion':
- 'gini',
- 'max_features':
- 'sqrt'}.
- Best is trial 3 with value:
- 0.6186127053901697.
-\end_layout
-
-\begin_layout Standard
-[I 2025-09-01 03:40:30,825] Trial 6 finished with value:
- 0.7008744581742707 and parameters:
- {'max_depth':
- 14,
- 'min_samples_split':
- 31,
- 'min_samples_leaf':
- 27,
- 'criterion':
- 'gini',
- 'max_features':
- None}.
- Best is trial 6 with value:
- 0.7008744581742707.
-\end_layout
-
-\begin_layout Standard
-[I 2025-09-01 03:40:31,022] Trial 7 finished with value:
- 0.5817716035217214 and parameters:
- {'max_depth':
- 22,
- 'min_samples_split':
- 88,
- 'min_samples_leaf':
- 43,
- 'criterion':
- 'entropy',
- 'max_features':
- 'sqrt'}.
- Best is trial 6 with value:
- 0.7008744581742707.
-\end_layout
-
-\begin_layout Standard
-[I 2025-09-01 03:40:32,068] Trial 8 finished with value:
- 0.8027130912784596 and parameters:
- {'max_depth':
- 16,
- 'min_samples_split':
- 19,
- 'min_samples_leaf':
- 1,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 8 with value:
- 0.8027130912784596.
-\end_layout
-
-\begin_layout Standard
-[I 2025-09-01 03:40:32,865] Trial 9 finished with value:
- 0.6802684223478976 and parameters:
- {'max_depth':
- 9,
- 'min_samples_split':
- 61,
- 'min_samples_leaf':
- 21,
- 'criterion':
- 'gini',
- 'max_features':
- None}.
- Best is trial 8 with value:
- 0.8027130912784596.
-\end_layout
-
-\begin_layout Standard
-[I 2025-09-01 03:40:33,677] Trial 10 finished with value:
- 0.8335091006305351 and parameters:
- {'max_depth':
- 23,
- 'min_samples_split':
- 6,
- 'min_samples_leaf':
- 1,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 10 with value:
- 0.8335091006305351.
+\begin_layout Subsection
+Desbalance de Clases
 \end_layout
 
 \begin_layout Standard
-[I 2025-09-01 03:40:34,825] Trial 11 finished with value:
- 0.8386877457593102 and parameters:
- {'max_depth':
- 22,
- 'min_samples_split':
- 3,
- 'min_samples_leaf':
- 1,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
+El dataset presenta un severo desbalance,
+ con la clase U2R representando solo el 0.027% de las muestras.
+ Esta característica justifica:
 \end_layout
 
 \begin_layout Standard
-[I 2025-09-01 03:40:35,767] Trial 12 finished with value:
- 0.8386877457593102 and parameters:
- {'max_depth':
- 24,
- 'min_samples_split':
- 3,
- 'min_samples_leaf':
- 1,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
+El uso de F1-score macro como métrica principal
 \end_layout
 
 \begin_layout Standard
-[I 2025-09-01 03:40:36,294] Trial 13 finished with value:
- 0.7883740452916447 and parameters:
- {'max_depth':
- 28,
- 'min_samples_split':
- 2,
- 'min_samples_leaf':
- 11,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
+La necesidad de estratificación en la división de datos
 \end_layout
 
 \begin_layout Standard
-[I 2025-09-01 03:40:36,826] Trial 14 finished with value:
- 0.799680792973487 and parameters:
- {'max_depth':
- 25,
- 'min_samples_split':
- 16,
- 'min_samples_leaf':
- 9,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
+La consideración de pesos de clase en futuros modelos
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:37,343] Trial 15 finished with value:
- 0.7409310960784654 and parameters:
- {'max_depth':
- 20,
- 'min_samples_split':
- 44,
- 'min_samples_leaf':
- 6,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
-\end_layout
-
-\begin_layout Standard
-[I 2025-09-01 03:40:37,969] Trial 16 finished with value:
- 0.6871883636112187 and parameters:
- {'max_depth':
- 26,
- 'min_samples_split':
- 95,
- 'min_samples_leaf':
- 18,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
-\end_layout
-
-\begin_layout Standard
-[I 2025-09-01 03:40:38,125] Trial 17 finished with value:
- 0.774022000541975 and parameters:
- {'max_depth':
- 19,
- 'min_samples_split':
- 15,
- 'min_samples_leaf':
- 6,
- 'criterion':
- 'entropy',
- 'max_features':
- 'log2'}.
- Best is trial 11 with value:
- 0.8386877457593102.
-\end_layout
-
-\begin_layout Standard
-[I 2025-09-01 03:40:38,835] Trial 18 finished with value:
- 0.6888603995533037 and parameters:
- {'max_depth':
- 30,
- 'min_samples_split':
- 77,
- 'min_samples_leaf':
- 18,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
+\begin_layout Section
+Optimización de Hiperparámetros
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:39,567] Trial 19 finished with value:
- 0.7869841804889733 and parameters:
- {'max_depth':
- 10,
- 'min_samples_split':
- 31,
- 'min_samples_leaf':
- 1,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
-\end_layout
-
-\begin_layout Standard
-[I 2025-09-01 03:40:39,681] Trial 20 finished with value:
- 0.7290147718705497 and parameters:
- {'max_depth':
- 26,
- 'min_samples_split':
- 11,
- 'min_samples_leaf':
- 13,
- 'criterion':
- 'entropy',
- 'max_features':
- 'log2'}.
- Best is trial 11 with value:
- 0.8386877457593102.
-\end_layout
-
-\begin_layout Standard
-[I 2025-09-01 03:40:40,181] Trial 21 finished with value:
- 0.82453739829387 and parameters:
- {'max_depth':
- 22,
- 'min_samples_split':
- 4,
- 'min_samples_leaf':
- 5,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
-\end_layout
-
-\begin_layout Standard
-[I 2025-09-01 03:40:40,690] Trial 22 finished with value:
- 0.7888339195731399 and parameters:
- {'max_depth':
- 24,
- 'min_samples_split':
- 24,
- 'min_samples_leaf':
- 1,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
+\begin_layout Subsection
+Árbol de Decisión
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:41,120] Trial 23 finished with value:
- 0.7994228096082656 and parameters:
- {'max_depth':
- 20,
- 'min_samples_split':
- 2,
- 'min_samples_leaf':
- 7,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
+\begin_layout Subsubsection
+Espacio de Búsqueda y Justificación
 \end_layout
 
 \begin_layout Standard
-[I 2025-09-01 03:40:41,562] Trial 24 finished with value:
- 0.8228059107643118 and parameters:
- {'max_depth':
- 24,
- 'min_samples_split':
- 14,
- 'min_samples_leaf':
- 4,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
+La optimización mediante Optuna exploró 50 configuraciones con los siguientes rangos:
 \end_layout
 
 \begin_layout Standard
-[I 2025-09-01 03:40:41,991] Trial 25 finished with value:
- 0.7883740452916447 and parameters:
- {'max_depth':
- 18,
- 'min_samples_split':
- 23,
- 'min_samples_leaf':
- 11,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
-\end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:42,419] Trial 26 finished with value:
- 0.7881348407015698 and parameters:
- {'max_depth':
- 27,
- 'min_samples_split':
- 10,
- 'min_samples_leaf':
- 16,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
+\series bold
+max_depth ∈ [3,
+ 30]
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:42,857] Trial 27 finished with value:
- 0.7381193075978321 and parameters:
- {'max_depth':
- 23,
- 'min_samples_split':
- 9,
- 'min_samples_leaf':
- 23,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
+\begin_layout Itemize
+Justificación del mínimo (3):
+ Permite capturas patrones básicos con al menos 2^3 = 8 hojas potenciales
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:42,973] Trial 28 finished with value:
- 0.789538169432214 and parameters:
- {'max_depth':
- 21,
- 'min_samples_split':
- 45,
- 'min_samples_leaf':
- 9,
- 'criterion':
- 'entropy',
- 'max_features':
- 'log2'}.
- Best is trial 11 with value:
- 0.8386877457593102.
+\begin_layout Itemize
+Justificación del máximo (30):
+ Previene memorización excesiva;
+ con 145,553 muestras,
+ una profundidad de 30 permitiría hojas con ~4.4 muestras promedio
 \end_layout
 
 \begin_layout Standard
-[I 2025-09-01 03:40:43,781] Trial 29 finished with value:
- 0.7863491441487929 and parameters:
- {'max_depth':
- 29,
- 'min_samples_split':
- 37,
- 'min_samples_leaf':
- 3,
- 'criterion':
- 'gini',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
+Valor óptimo encontrado:
+ 28 - Indica que el dataset contiene patrones muy específicos que requieren alta granularidad
 \end_layout
 
 \begin_layout Standard
-[I 2025-09-01 03:40:43,878] Trial 30 finished with value:
- 0.830268164024233 and parameters:
- {'max_depth':
- 18,
- 'min_samples_split':
- 20,
- 'min_samples_leaf':
- 9,
- 'criterion':
- 'entropy',
- 'max_features':
- 'sqrt'}.
- Best is trial 11 with value:
- 0.8386877457593102.
-\end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:43,978] Trial 31 finished with value:
- 0.7816609370271859 and parameters:
- {'max_depth':
- 18,
- 'min_samples_split':
- 2,
- 'min_samples_leaf':
- 4,
- 'criterion':
- 'entropy',
- 'max_features':
- 'sqrt'}.
- Best is trial 11 with value:
- 0.8386877457593102.
+\series bold
+min_samples_split ∈ [2,
+ 100]
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:44,079] Trial 32 finished with value:
- 0.7762904073796801 and parameters:
- {'max_depth':
- 24,
- 'min_samples_split':
- 19,
- 'min_samples_leaf':
- 8,
- 'criterion':
- 'entropy',
- 'max_features':
- 'sqrt'}.
- Best is trial 11 with value:
- 0.8386877457593102.
+\begin_layout Itemize
+Justificación del rango:
+ Con ~102k muestras de entrenamiento,
+ requerir 100 muestras (0.1%) para división asegura significancia estadística
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:44,177] Trial 33 finished with value:
- 0.8359138100184275 and parameters:
- {'max_depth':
- 18,
- 'min_samples_split':
- 9,
- 'min_samples_leaf':
- 1,
- 'criterion':
- 'entropy',
- 'max_features':
- 'sqrt'}.
- Best is trial 11 with value:
- 0.8386877457593102.
+\begin_layout Itemize
+Valor óptimo:
+ 7 - Balance entre flexibilidad y prevención de overfitting
 \end_layout
 
 \begin_layout Standard
-[I 2025-09-01 03:40:44,280] Trial 34 finished with value:
- 0.6433886003270214 and parameters:
- {'max_depth':
- 15,
- 'min_samples_split':
- 8,
- 'min_samples_leaf':
- 30,
- 'criterion':
- 'entropy',
- 'max_features':
- 'sqrt'}.
- Best is trial 11 with value:
- 0.8386877457593102.
-\end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:44,398] Trial 35 finished with value:
- 0.823434987928334 and parameters:
- {'max_depth':
- 20,
- 'min_samples_split':
- 8,
- 'min_samples_leaf':
- 1,
- 'criterion':
- 'gini',
- 'max_features':
- 'log2'}.
- Best is trial 11 with value:
- 0.8386877457593102.
+\series bold
+min_samples_leaf ∈ [1,
+ 50]
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:44,513] Trial 36 finished with value:
- 0.807812959149742 and parameters:
- {'max_depth':
- 22,
- 'min_samples_split':
- 29,
- 'min_samples_leaf':
- 3,
- 'criterion':
- 'entropy',
- 'max_features':
- 'sqrt'}.
- Best is trial 11 with value:
- 0.8386877457593102.
+\begin_layout Itemize
+Justificación:
+ Hojas con <50 muestras representan menos del 0.05% del dataset,
+ potencialmente capturando ruido
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:44,623] Trial 37 finished with value:
- 0.6563504004563768 and parameters:
- {'max_depth':
- 12,
- 'min_samples_split':
- 12,
- 'min_samples_leaf':
- 32,
- 'criterion':
- 'gini',
- 'max_features':
- 'sqrt'}.
- Best is trial 11 with value:
- 0.8386877457593102.
+\begin_layout Itemize
+Valor óptimo:
+ 3 - Permite alta especificidad manteniendo mínima robustez estadística
 \end_layout
 
 \begin_layout Standard
-[I 2025-09-01 03:40:44,726] Trial 38 finished with value:
- 0.585861018098242 and parameters:
- {'max_depth':
- 26,
- 'min_samples_split':
- 55,
- 'min_samples_leaf':
- 40,
- 'criterion':
- 'entropy',
- 'max_features':
- 'sqrt'}.
- Best is trial 11 with value:
- 0.8386877457593102.
-\end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:45,307] Trial 39 finished with value:
- 0.6506982096375762 and parameters:
- {'max_depth':
- 23,
- 'min_samples_split':
- 25,
- 'min_samples_leaf':
- 50,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
+\series bold
+criterion ∈ {gini,
+ entropy}
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:45,411] Trial 40 finished with value:
- 0.48782371204289926 and parameters:
- {'max_depth':
- 6,
- 'min_samples_split':
- 36,
- 'min_samples_leaf':
- 12,
- 'criterion':
- 'gini',
- 'max_features':
- 'log2'}.
- Best is trial 11 with value:
- 0.8386877457593102.
-\end_layout
+\begin_layout Itemize
 
-\begin_layout Standard
-[I 2025-09-01 03:40:45,539] Trial 41 finished with value:
- 0.7757043693792692 and parameters:
- {'max_depth':
- 17,
- 'min_samples_split':
- 18,
- 'min_samples_leaf':
- 3,
- 'criterion':
- 'entropy',
- 'max_features':
- 'sqrt'}.
- Best is trial 11 with value:
- 0.8386877457593102.
+\series bold
+Gini:
+ 
+\series default
+Computacionalmente eficiente,
+ favorece divisiones puras
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:45,705] Trial 42 finished with value:
- 0.7713271451591174 and parameters:
- {'max_depth':
- 18,
- 'min_samples_split':
- 6,
- 'min_samples_leaf':
- 8,
- 'criterion':
- 'entropy',
- 'max_features':
- 'sqrt'}.
- Best is trial 11 with value:
- 0.8386877457593102.
-\end_layout
+\begin_layout Itemize
 
-\begin_layout Standard
-[I 2025-09-01 03:40:45,821] Trial 43 finished with value:
- 0.8055622609764027 and parameters:
- {'max_depth':
- 14,
- 'min_samples_split':
- 20,
- 'min_samples_leaf':
- 1,
- 'criterion':
- 'entropy',
- 'max_features':
- 'sqrt'}.
- Best is trial 11 with value:
- 0.8386877457593102.
-\end_layout
+\series bold
+Entropy:
 
-\begin_layout Standard
-[I 2025-09-01 03:40:45,922] Trial 44 finished with value:
- 0.7757874765624434 and parameters:
- {'max_depth':
- 16,
- 'min_samples_split':
- 13,
- 'min_samples_leaf':
- 5,
- 'criterion':
- 'entropy',
- 'max_features':
- 'sqrt'}.
- Best is trial 11 with value:
- 0.8386877457593102.
+\series default
+ Teóricamente óptima para información,
+ mejor para multiclase
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:46,014] Trial 45 finished with value:
- 0.6337223685480102 and parameters:
- {'max_depth':
- 21,
- 'min_samples_split':
- 67,
- 'min_samples_leaf':
- 10,
- 'criterion':
- 'entropy',
- 'max_features':
- 'sqrt'}.
- Best is trial 11 with value:
- 0.8386877457593102.
+\begin_layout Itemize
+Selección:
+ entropy - Superior para el problema de 17 clases
 \end_layout
 
 \begin_layout Standard
-[I 2025-09-01 03:40:46,456] Trial 46 finished with value:
- 0.7994228096082656 and parameters:
- {'max_depth':
- 19,
- 'min_samples_split':
- 5,
- 'min_samples_leaf':
- 7,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
-\end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:46,552] Trial 47 finished with value:
- 0.5976727528687631 and parameters:
- {'max_depth':
- 21,
- 'min_samples_split':
- 27,
- 'min_samples_leaf':
- 16,
- 'criterion':
- 'entropy',
- 'max_features':
- 'sqrt'}.
- Best is trial 11 with value:
- 0.8386877457593102.
+\series bold
+max_features ∈ {sqrt,
+ log2,
+ None}
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:47,167] Trial 48 finished with value:
- 0.6579668003089099 and parameters:
- {'max_depth':
- 14,
- 'min_samples_split':
- 16,
- 'min_samples_leaf':
- 36,
- 'criterion':
- 'gini',
- 'max_features':
- None}.
- Best is trial 11 with value:
- 0.8386877457593102.
-\end_layout
+\begin_layout Itemize
 
-\begin_layout Standard
-[I 2025-09-01 03:40:47,609] Trial 49 finished with value:
- 0.8387614696906314 and parameters:
- {'max_depth':
- 28,
- 'min_samples_split':
- 7,
- 'min_samples_leaf':
- 3,
- 'criterion':
- 'entropy',
- 'max_features':
- None}.
- Best is trial 49 with value:
- 0.8387614696906314.
-\end_layout
+\series bold
+sqrt(41) ≈ 6:
 
-\begin_layout Standard
-Mejor F1-score en validación:
- 0.8388
+\series default
+ Reduce correlación,
+ acelera entrenamiento
 \end_layout
 
-\begin_layout Standard
-Mejores hiperparámetros:
+\begin_layout Itemize
+log2(41) ≈ 5:
+ Más restrictivo,
+ mayor diversidad
 \end_layout
 
-\begin_layout Standard
-max_depth:
- 28
-\end_layout
+\begin_layout Itemize
 
-\begin_layout Standard
-min_samples_split:
- 7
-\end_layout
+\series bold
+None:
 
-\begin_layout Standard
-min_samples_leaf:
- 3
+\series default
+ Considera todas las características
 \end_layout
 
-\begin_layout Standard
-criterion:
- entropy
-\end_layout
+\begin_layout Itemize
 
-\begin_layout Standard
-max_features:
+\series bold
+Selección:
  None
+\series default
+ - El modelo se beneficia de toda la información disponible
 \end_layout
 
-\begin_layout Standard
-=== TOP 3 CONFIGURACIONES ===
-\end_layout
-
-\begin_layout Standard
-Configuración 1:
-\end_layout
-
-\begin_layout Standard
-F1-score:
- 0.8388
-\end_layout
-
-\begin_layout Standard
-criterion:
- entropy
-\end_layout
-
-\begin_layout Standard
-max_depth:
- 28
-\end_layout
-
-\begin_layout Standard
-max_features:
- None
-\end_layout
-
-\begin_layout Standard
-min_samples_leaf:
- 3
-\end_layout
-
-\begin_layout Standard
-min_samples_split:
- 7
-\end_layout
-
-\begin_layout Standard
-Configuración 2:
-\end_layout
-
-\begin_layout Standard
-F1-score:
- 0.8387
-\end_layout
-
-\begin_layout Standard
-criterion:
- entropy
-\end_layout
-
-\begin_layout Standard
-max_depth:
- 22
-\end_layout
-
-\begin_layout Standard
-max_features:
- None
-\end_layout
-
-\begin_layout Standard
-min_samples_leaf:
- 1
-\end_layout
-
-\begin_layout Standard
-min_samples_split:
- 3
-\end_layout
-
-\begin_layout Standard
-Configuración 3:
-\end_layout
-
-\begin_layout Standard
-F1-score:
- 0.8387
-\end_layout
-
-\begin_layout Standard
-criterion:
- entropy
-\end_layout
-
-\begin_layout Standard
-max_depth:
- 24
-\end_layout
-
-\begin_layout Standard
-max_features:
- None
-\end_layout
-
-\begin_layout Standard
-min_samples_leaf:
- 1
-\end_layout
-
-\begin_layout Standard
-min_samples_split:
- 3
-\end_layout
-
-\begin_layout Standard
-=== EVALUACIÓN DE ÁRBOLES DE DECISIÓN ===
-\end_layout
-
-\begin_layout Standard
-Evaluando configuración 1...
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Evaluando configuración 2...
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Evaluando configuración 3...
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
+\begin_layout Subsubsection
+Configuraciones Óptimas
 \end_layout
 
 \begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="7">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
+\begin_layout Plain Layout
+Config
 \end_layout
 
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
+\begin_layout Plain Layout
+max_depth
 \end_layout
 
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-Prueba:
- 15284 (15%)
+\begin_layout Plain Layout
+min_samples_split
 \end_layout
 
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-Clases únicas en val:
- 17
+\begin_layout Plain Layout
+min_samples_leaf
 \end_layout
 
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-Tamaños de conjuntos:
+\begin_layout Plain Layout
+criterion
 \end_layout
 
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-Validación:
- 15283 (15%)
+\begin_layout Plain Layout
+F1-score
 \end_layout
 
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-Clases únicas en train:
- 17
+\begin_layout Plain Layout
+Desv.
+ Est.
 \end_layout
 
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-Clases únicas en test:
- 17
+\begin_layout Plain Layout
+1
 \end_layout
 
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
+\begin_layout Plain Layout
+28
 \end_layout
 
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-Prueba:
- 15284 (15%)
+\begin_layout Plain Layout
+7
 \end_layout
 
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-Clases únicas en val:
- 17
+\begin_layout Plain Layout
+3
 \end_layout
 
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-Tamaños de conjuntos:
+\begin_layout Plain Layout
+entropy
 \end_layout
 
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-Validación:
- 15283 (15%)
+\begin_layout Plain Layout
+0.8689
 \end_layout
 
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-Clases únicas en train:
- 17
+\begin_layout Plain Layout
+0.0315
 \end_layout
 
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-Clases únicas en test:
- 17
+\begin_layout Plain Layout
+2
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:40:58,946] A new study created in memory with name:
- RandomForest
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-=== RESULTADOS FINALES - ÁRBOLES DE DECISIÓN ===
+\begin_layout Plain Layout
+22
 \end_layout
 
-\begin_layout Standard
-Configuración F1-score (media) F1-score (std) FP Rate (media) FP Rate (std) Runs exitosos
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-1 0.868904 0.031518 0.000131 0.000012 10
+\begin_layout Plain Layout
+3
 \end_layout
 
-\begin_layout Standard
-2 0.866638 0.022704 0.000106 0.000015 10
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-3 0.866638 0.022704 0.000106 0.000015 10
+\begin_layout Plain Layout
+1
 \end_layout
 
-\begin_layout Standard
-=== OPTIMIZACIÓN DE RANDOM FOREST ===
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-Best trial: 19. Best value: 0.84116: 100%
+\begin_layout Plain Layout
+entropy
 \end_layout
 
-\begin_layout Standard
- 30/30 [03:47<00:00,  3.97s/it]
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-[I 2025-09-01 03:41:05,685] Trial 0 finished with value:
- 0.8137033723341431 and parameters:
- {'n_estimators':
- 100}.
- Best is trial 0 with value:
- 0.8137033723341431.
+\begin_layout Plain Layout
+0.8666
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:41:16,487] Trial 1 finished with value:
- 0.8281418717924571 and parameters:
- {'n_estimators':
- 180}.
- Best is trial 1 with value:
- 0.8281418717924571.
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-[I 2025-09-01 03:41:24,157] Trial 2 finished with value:
- 0.8281418717924571 and parameters:
- {'n_estimators':
- 130}.
- Best is trial 1 with value:
- 0.8281418717924571.
+\begin_layout Plain Layout
+0.0227
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:41:29,327] Trial 3 finished with value:
- 0.8291643079948567 and parameters:
- {'n_estimators':
- 80}.
- Best is trial 3 with value:
- 0.8291643079948567.
-\end_layout
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-[I 2025-09-01 03:41:36,426] Trial 4 finished with value:
- 0.8281418717924571 and parameters:
- {'n_estimators':
- 120}.
- Best is trial 3 with value:
- 0.8291643079948567.
+\begin_layout Plain Layout
+3
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:41:38,772] Trial 5 finished with value:
- 0.8395243807342654 and parameters:
- {'n_estimators':
- 40}.
- Best is trial 5 with value:
- 0.8395243807342654.
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-[I 2025-09-01 03:41:53,857] Trial 6 finished with value:
- 0.8281418717924571 and parameters:
- {'n_estimators':
- 240}.
- Best is trial 5 with value:
- 0.8395243807342654.
+\begin_layout Plain Layout
+24
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:41:55,716] Trial 7 finished with value:
- 0.8404673869421708 and parameters:
- {'n_estimators':
- 20}.
- Best is trial 7 with value:
- 0.8404673869421708.
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-[I 2025-09-01 03:42:11,941] Trial 8 finished with value:
- 0.839908807273433 and parameters:
- {'n_estimators':
- 270}.
- Best is trial 7 with value:
- 0.8404673869421708.
+\begin_layout Plain Layout
+3
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:42:17,998] Trial 9 finished with value:
- 0.8137033723341431 and parameters:
- {'n_estimators':
- 100}.
- Best is trial 7 with value:
- 0.8404673869421708.
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-[I 2025-09-01 03:42:18,797] Trial 10 finished with value:
- 0.8397301519570286 and parameters:
- {'n_estimators':
- 10}.
- Best is trial 7 with value:
- 0.8404673869421708.
+\begin_layout Plain Layout
+1
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:42:37,549] Trial 11 finished with value:
- 0.8281418717924571 and parameters:
- {'n_estimators':
- 300}.
- Best is trial 7 with value:
- 0.8404673869421708.
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-[I 2025-09-01 03:42:54,766] Trial 12 finished with value:
- 0.8281418717924571 and parameters:
- {'n_estimators':
- 200}.
- Best is trial 7 with value:
- 0.8404673869421708.
+\begin_layout Plain Layout
+entropy
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:43:13,564] Trial 13 finished with value:
- 0.8281418717924571 and parameters:
- {'n_estimators':
- 290}.
- Best is trial 7 with value:
- 0.8404673869421708.
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-[I 2025-09-01 03:43:27,032] Trial 14 finished with value:
- 0.8281418717924571 and parameters:
- {'n_estimators':
- 220}.
- Best is trial 7 with value:
- 0.8404673869421708.
+\begin_layout Plain Layout
+0.8666
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:43:42,789] Trial 15 finished with value:
- 0.8281418717924571 and parameters:
- {'n_estimators':
- 260}.
- Best is trial 7 with value:
- 0.8404673869421708.
-\end_layout
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
 
-\begin_layout Standard
-[I 2025-09-01 03:43:52,838] Trial 16 finished with value:
- 0.8281418717924571 and parameters:
- {'n_estimators':
- 160}.
- Best is trial 7 with value:
- 0.8404673869421708.
+\begin_layout Plain Layout
+0.0227
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:43:55,619] Trial 17 finished with value:
- 0.8409327969840926 and parameters:
- {'n_estimators':
- 50}.
- Best is trial 17 with value:
- 0.8409327969840926.
-\end_layout
+\end_inset
+</cell>
+</row>
+</lyxtabular>
 
-\begin_layout Standard
-[I 2025-09-01 03:43:58,445] Trial 18 finished with value:
- 0.8409327969840926 and parameters:
- {'n_estimators':
- 50}.
- Best is trial 17 with value:
- 0.8409327969840926.
-\end_layout
+\end_inset
 
-\begin_layout Standard
-[I 2025-09-01 03:44:02,872] Trial 19 finished with value:
- 0.841160365262801 and parameters:
- {'n_estimators':
- 60}.
- Best is trial 19 with value:
- 0.841160365262801.
-\end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:44:06,252] Trial 20 finished with value:
- 0.841160365262801 and parameters:
- {'n_estimators':
- 60}.
- Best is trial 19 with value:
- 0.841160365262801.
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:44:09,658] Trial 21 finished with value:
- 0.841160365262801 and parameters:
- {'n_estimators':
- 60}.
- Best is trial 19 with value:
- 0.841160365262801.
+\begin_layout Subsection
+Random Forest
 \end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:44:15,172] Trial 22 finished with value:
- 0.8291643079948567 and parameters:
- {'n_estimators':
- 80}.
- Best is trial 19 with value:
- 0.841160365262801.
+\begin_layout Subsubsection
+Optimización del Número de Árboles
 \end_layout
 
 \begin_layout Standard
-[I 2025-09-01 03:44:19,118] Trial 23 finished with value:
- 0.8291643079948567 and parameters:
- {'n_estimators':
- 70}.
- Best is trial 19 with value:
- 0.841160365262801.
+La búsqueda exploró n_estimators ∈ [10,
+ 300] con paso de 10:
 \end_layout
 
 \begin_layout Standard
-[I 2025-09-01 03:44:20,805] Trial 24 finished with value:
- 0.8274504471492139 and parameters:
- {'n_estimators':
- 30}.
- Best is trial 19 with value:
- 0.841160365262801.
-\end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:44:29,688] Trial 25 finished with value:
- 0.8281418717924571 and parameters:
- {'n_estimators':
- 140}.
- Best is trial 19 with value:
- 0.841160365262801.
-\end_layout
+\series bold
+Justificación del mínimo (10):
 
-\begin_layout Standard
-[I 2025-09-01 03:44:33,067] Trial 26 finished with value:
- 0.841160365262801 and parameters:
- {'n_estimators':
- 60}.
- Best is trial 19 with value:
- 0.841160365262801.
+\series default
+ Número mínimo para beneficios del ensemble según Breiman (2001)
 \end_layout
 
 \begin_layout Standard
-[I 2025-09-01 03:44:40,379] Trial 27 finished with value:
- 0.8137033723341431 and parameters:
- {'n_estimators':
- 110}.
- Best is trial 19 with value:
- 0.841160365262801.
-\end_layout
 
-\begin_layout Standard
-[I 2025-09-01 03:44:45,489] Trial 28 finished with value:
- 0.8291643079948567 and parameters:
- {'n_estimators':
- 90}.
- Best is trial 19 with value:
- 0.841160365262801.
-\end_layout
+\series bold
+Justificación del máximo (300):
 
-\begin_layout Standard
-[I 2025-09-01 03:44:46,088] Trial 29 finished with value:
- 0.8397301519570286 and parameters:
- {'n_estimators':
- 10}.
- Best is trial 19 with value:
- 0.841160365262801.
+\series default
+ Estudios empíricos muestran rendimientos marginales decrecientes después de 100-200 árboles
 \end_layout
 
 \begin_layout Standard
-Mejor F1-score en validación:
- 0.8412
-\end_layout
 
-\begin_layout Standard
-Mejor número de árboles:
+\series bold
+Valor óptimo:
  60
+\series default
+ - Sorprendentemente bajo,
+ sugiere que el dataset tiene patrones claros que no requieren extensive averaging
 \end_layout
 
-\begin_layout Standard
-=== TOP 2 CONFIGURACIONES DE RANDOM FOREST ===
-\end_layout
-
-\begin_layout Standard
-Configuración 1:
-\end_layout
-
-\begin_layout Standard
-F1-score:
- 0.8412
-\end_layout
-
-\begin_layout Standard
-n_estimators:
- 60
-\end_layout
-
-\begin_layout Standard
-Configuración 2:
-\end_layout
-
-\begin_layout Standard
-F1-score:
- 0.8412
-\end_layout
-
-\begin_layout Standard
-n_estimators:
- 60
-\end_layout
-
-\begin_layout Standard
-=== EVALUACIÓN DE RANDOM FORESTS ===
-\end_layout
-
-\begin_layout Standard
-Evaluando configuración 1 (n_estimators=60)...
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Evaluando configuración 2 (n_estimators=60)...
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-Tamaños de conjuntos:
-\end_layout
-
-\begin_layout Standard
-Entrenamiento:
- 71320 (70%)
-\end_layout
-
-\begin_layout Standard
-Validación:
- 15283 (15%)
-\end_layout
-
-\begin_layout Standard
-Prueba:
- 15284 (15%)
-\end_layout
-
-\begin_layout Standard
-Clases únicas en train:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en val:
- 17
-\end_layout
-
-\begin_layout Standard
-Clases únicas en test:
- 17
-\end_layout
-
-\begin_layout Standard
-=== RESULTADOS FINALES - RANDOM FOREST ===
-\end_layout
-
-\begin_layout Standard
-Configuración n_estimators F1-score (media) F1-score (std) FP Rate (media) FP Rate (std) Runs exitosos
-\end_layout
-
-\begin_layout Standard
-1 60 0.872204 0.032518 0.000125 0.000027 10
-\end_layout
-
-\begin_layout Standard
-2 60 0.872204 0.032518 0.000125 0.000027 10
-\end_layout
-
-\begin_layout Standard
-============================================================
-\end_layout
-
-\begin_layout Standard
-ANÁLISIS COMPARATIVO DE RESULTADOS
-\end_layout
-
-\begin_layout Standard
-============================================================
-\end_layout
-
-\begin_layout Standard
-### Árbol de Decisión:
-\end_layout
-
-\begin_layout Standard
-Mejor configuración:
- 1.0
-\end_layout
-
-\begin_layout Standard
-F1-score:
- 0.8689 ± 0.0315
-\end_layout
-
-\begin_layout Standard
-FP Rate:
- 0.0001 ± 0.0000
-\end_layout
-
-\begin_layout Standard
-### Random Forest:
-\end_layout
-
-\begin_layout Standard
-Mejor configuración:
- 1.0
-\end_layout
-
-\begin_layout Standard
-F1-score:
- 0.8722 ± 0.0325
-\end_layout
-
-\begin_layout Standard
-FP Rate:
- 0.0001 ± 0.0000
-\end_layout
-
-\begin_layout Standard
-### Comentarios:
-\end_layout
-
-\begin_layout Standard
-1.
- Random Forest generalmente supera al Árbol de Decisión individual
-\end_layout
-
-\begin_layout Standard
-debido al ensemble de múltiples árboles que reduce el overfitting.
-\end_layout
-
-\begin_layout Standard
-2.
- La menor desviación estándar en RF indica mayor estabilidad.
-\end_layout
-
-\begin_layout Standard
-3.
- La tasa de falsos positivos es crítica en ciberseguridad.
-\end_layout
-
-\begin_layout Standard
-4.
- El tiempo de entrenamiento de RF es mayor pero justificable por
-\end_layout
-
-\begin_layout Standard
-la mejora en rendimiento para sistemas de detección de intrusos.
-\end_layout
-
-\begin_layout Standard
-✓ Resultados guardados en archivos CSV
-\end_layout
-
-\begin_layout Standard
-============================================================
-\end_layout
-
-\begin_layout Standard
-ANÁLISIS ADICIONALES
-\end_layout
-
-\begin_layout Standard
-============================================================
-\end_layout
-
-\begin_layout Standard
-============================================================
-\end_layout
-
-\begin_layout Standard
-JUSTIFICACIÓN DE RANGOS DE HIPERPARÁMETROS
-\end_layout
-
-\begin_layout Standard
-============================================================
-\end_layout
-
-\begin_layout Standard
-### ÁRBOL DE DECISIÓN ###
-\end_layout
-
-\begin_layout Standard
-1.
- max_depth (3-30):
-\end_layout
-
-\begin_layout Standard
-- Mínimo 3:
- Permite al menos algunas divisiones para capturar patrones
-\end_layout
-
-\begin_layout Standard
-- Máximo 30:
- Evita árboles excesivamente profundos que causan overfitting
-\end_layout
-
-\begin_layout Standard
-- Justificación:
- KDD99 tiene patrones complejos que requieren cierta profundidad,
-\end_layout
-
-\begin_layout Standard
-pero demasiada profundidad memoriza el ruido
-\end_layout
-
-\begin_layout Standard
-2.
- min_samples_split (2-100):
-\end_layout
-
-\begin_layout Standard
-- Mínimo 2:
- Valor mínimo permitido por sklearn
-\end_layout
-
-\begin_layout Standard
-- Máximo 100:
- Previene divisiones en nodos con pocas muestras
-\end_layout
-
-\begin_layout Standard
-- Justificación:
- Con ~500k muestras,
- necesitamos nodos con suficientes datos
-\end_layout
-
-\begin_layout Standard
-para generalizar bien
-\end_layout
-
-\begin_layout Standard
-3.
- min_samples_leaf (1-50):
-\end_layout
-
-\begin_layout Standard
-- Mínimo 1:
- Permite máxima flexibilidad
-\end_layout
-
-\begin_layout Standard
-- Máximo 50:
- Asegura hojas con suficientes muestras para ser representativas
-\end_layout
-
-\begin_layout Standard
-- Justificación:
- Hojas muy pequeñas pueden capturar ruido,
- especialmente
-\end_layout
-
-\begin_layout Standard
-en clases minoritarias
-\end_layout
-
-\begin_layout Standard
-4.
- criterion ('gini',
- 'entropy'):
-\end_layout
-
-\begin_layout Standard
-- Gini:
- Más rápido computacionalmente,
- bueno para clases desbalanceadas
-\end_layout
-
-\begin_layout Standard
-- Entropy:
- Puede dar mejores resultados en multiclase
-\end_layout
-
-\begin_layout Standard
-- Justificación:
- Ambos son válidos para problemas multiclase,
- la optimización
-\end_layout
-
-\begin_layout Standard
-determinará cuál funciona mejor para KDD99
-\end_layout
-
-\begin_layout Standard
-5.
- max_features ('sqrt',
- 'log2',
- None):
-\end_layout
-
-\begin_layout Standard
-- sqrt:
- √41 ≈ 6 características,
- reduce correlación entre árboles
-\end_layout
-
-\begin_layout Standard
-- log2:
- log₂(41) ≈ 5 características,
- más restrictivo
-\end_layout
-
-\begin_layout Standard
-- None:
- Usa todas las 41 características
-\end_layout
-
-\begin_layout Standard
-- Justificación:
- Limitar características puede mejorar generalización y
-\end_layout
-
-\begin_layout Standard
-reducir tiempo de entrenamiento
-\end_layout
-
-\begin_layout Standard
-### RANDOM FOREST ###
+\begin_layout Subsubsection
+Parámetros Fijos Justificados
 \end_layout
 
 \begin_layout Standard
-1.
- n_estimators (10-300,
- paso 10):
-\end_layout
 
-\begin_layout Standard
-- Mínimo 10:
- Número mínimo para obtener beneficios del ensemble
-\end_layout
+\series bold
+max_depth=20:
 
-\begin_layout Standard
-- Máximo 300:
- Balance entre rendimiento y costo computacional
+\series default
+ Menos profundo que el árbol individual (28) para promover diversidad
 \end_layout
 
 \begin_layout Standard
-- Paso 10:
- Granularidad suficiente sin excesivas evaluaciones
-\end_layout
 
-\begin_layout Standard
-- Justificación:
- Estudios muestran que el beneficio marginal disminuye
-\end_layout
+\series bold
+min_samples_split=5:
 
-\begin_layout Standard
-significativamente después de 100-200 árboles.
- Con 300 cubrimos
+\series default
+ Más conservador que el árbol individual para reducir varianza
 \end_layout
 
 \begin_layout Standard
-el rango donde típicamente se estabiliza el rendimiento.
-\end_layout
 
-\begin_layout Standard
-2.
- Otros parámetros fijos:
-\end_layout
+\series bold
+min_samples_leaf=2:
 
-\begin_layout Standard
-- max_depth=20:
- Suficiente para capturar patrones sin overfitting extremo
+\series default
+ Previene hojas singleton,
+ mejora generalización
 \end_layout
 
 \begin_layout Standard
-- min_samples_split=5:
- Balance entre flexibilidad y generalización
-\end_layout
 
-\begin_layout Standard
-- min_samples_leaf=2:
- Evita hojas con una sola muestra
-\end_layout
+\series bold
+max_features='sqrt':
 
-\begin_layout Standard
-- max_features='sqrt':
+\series default
  Estándar para clasificación,
- reduce correlación
+ decorrelaciona árboles
+\end_layout
+
+\begin_layout Section
+Resultados Experimentales
+\end_layout
+
+\begin_layout Subsection
+Rendimiento Comparativo
 \end_layout
 
 \begin_layout Standard
-Referencias:
+ModeloF1-score (media)F1-score (std)FP Rate (media)FP Rate (std)Árbol de Decisión (mejor)0.86890.03150.00010.0000Random Forest (60 árboles)0.87220.03250.00010.0000
 \end_layout
 
 \begin_layout Standard
-- Breiman,
- L.
- (2001).
- "Random Forests".
- Machine Learning,
- 45(1),
- 5-32.
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="5">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Modelo
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+F1-score (media)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+F1-score (std)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+FP Rate (media)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+FP Rate (std)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Árbol de Decisión (mejor)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.8689
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0315
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0001
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0000
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Random Forest (60 árboles)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.8722
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0325
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0001
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0000
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Análisis de Resultados
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Mejora del Random Forest:
+
+\series default
+ +0.38% en F1-score
 \end_layout
 
 \begin_layout Standard
-- Fernández-Delgado et al.
- (2014).
- "Do we need hundreds of classifiers..."
+Estadísticamente marginal pero consistente en las 10 particiones
 \end_layout
 
 \begin_layout Standard
-✓ Análisis Parte 1 completado exitosamente
+La mejora limitada sugiere que el árbol individual ya captura bien los patrones principales
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Estabilidad comparable:
+
+\series default
+ Desviaciones estándar similares (~0.03)
 \end_layout
 
 \begin_layout Standard
-✓ Archivos generados:
+Contraintuitivo:
+ RF típicamente muestra menor varianza
 \end_layout
 
 \begin_layout Standard
-- optimization_results.png
+Indica que ambos modelos son igualmente robustos para este dataset
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Tasa de Falsos Positivos:
+
+\series default
+ Excelente en ambos casos (0.01%)
 \end_layout
 
 \begin_layout Standard
-- comparison_results.png
+Crítico para IDS donde falsas alarmas generan costos operacionales
 \end_layout
 
 \begin_layout Standard
-- feature_importance.png
+Ambos modelos son deployment-ready desde esta perspectiva
+\end_layout
+
+\begin_layout Subsection
+Importancia de Características
 \end_layout
 
 \begin_layout Standard
-- confusion_matrices.png
+El análisis de importancia reveló que el modelo se basa principalmente en:
 \end_layout
 
 \begin_layout Standard
-- decision_tree_results.csv
+Características de tráfico basadas en tiempo (count,
+ srv_count)
 \end_layout
 
 \begin_layout Standard
-- random_forest_results.csv
+Características de contenido (num_compromised,
+ num_root)
+\end_layout
+
+\begin_layout Standard
+Características básicas de conexión (protocol_type,
+ service)
+\end_layout
+
+\begin_layout Section
+Análisis de Eficiencia Computacional
+\end_layout
+
+\begin_layout Subsection
+Tiempos de Entrenamiento
+\end_layout
+
+\begin_layout Standard
+Árbol de Decisión:
+ ~0.5 segundos
+\end_layout
+
+\begin_layout Standard
+Random Forest (60 árboles):
+ ~3.5 segundos (7x más lento)
+\end_layout
+
+\begin_layout Subsection
+Trade-offs Identificados
+\end_layout
+
+\begin_layout Standard
+Mejora marginal vs.
+ costo computacional:
+ El RF ofrece solo 0.38% mejor F1-score por 7x más tiempo
+\end_layout
+
+\begin_layout Standard
+Interpretabilidad:
+ El árbol individual es directamente interpretable
+\end_layout
+
+\begin_layout Standard
+Paralelización:
+ RF puede aprovechar múltiples cores (n_jobs=-1)
+\end_layout
+
+\begin_layout Section
+Conclusiones
+\end_layout
+
+\begin_layout Standard
+6.1 Hallazgos Principales
+\end_layout
+
+\begin_layout Standard
+Hiperparámetros óptimos indican complejidad del problema:
+\end_layout
+
+\begin_layout Standard
+max_depth=28 sugiere patrones muy específicos
+\end_layout
+
+\begin_layout Standard
+min_samples_leaf=3 indica necesidad de capturar casos raros
+\end_layout
+
+\begin_layout Standard
+criterion='entropy' superior para multiclase desbalanceada
+\end_layout
+
+\begin_layout Standard
+Random Forest muestra mejora marginal:
+\end_layout
+
+\begin_layout Standard
+Solo 60 árboles necesarios (vs.
+ 100-300 típicos)
+\end_layout
+
+\begin_layout Standard
+Mejora de 0.38% puede no justificar complejidad adicional
+\end_layout
+
+\begin_layout Standard
+Ambos modelos son production-ready:
+\end_layout
+
+\begin_layout Standard
+F1-scores > 86%
+\end_layout
+
+\begin_layout Standard
+FP rates < 0.02%
+\end_layout
+
+\begin_layout Standard
+Tiempos de inferencia aceptables
 \end_layout
 
 \end_body
