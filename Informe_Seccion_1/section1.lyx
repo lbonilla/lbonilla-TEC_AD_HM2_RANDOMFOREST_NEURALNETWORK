@@ -1021,6 +1021,14 @@ Paralelización:
  RF puede aprovechar múltiples cores (n_jobs=-1)
 \end_layout
 
+\begin_layout Subsection
+Gráficos
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
 \begin_layout Section
 Conclusiones
 \end_layout
