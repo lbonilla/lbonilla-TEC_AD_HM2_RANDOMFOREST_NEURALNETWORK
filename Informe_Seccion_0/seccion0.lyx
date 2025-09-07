@@ -1,0 +1,448 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass report
+\use_default_options true
+\maintain_unincluded_children no
+\language spanish
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008080
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content true
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Section
+Contexto del Problema
+\end_layout
+
+\begin_layout Standard
+El dataset KDD99 constituye uno de los benchmarks más utilizados en la investigación de sistemas de detección de intrusiones (IDS).
+ Contiene 494,021 conexiones de red etiquetadas como normales o como uno de 21 tipos diferentes de ataques,
+ agrupados en cuatro categorías principales:
+\end_layout
+
+\begin_layout Standard
+DoS (Denial of Service):
+ 54,572 instancias
+\end_layout
+
+\begin_layout Standard
+Probe:
+ 2,131 instancias
+\end_layout
+
+\begin_layout Standard
+R2L (Remote to Local):
+ 978 instancias
+\end_layout
+
+\begin_layout Standard
+U2R (User to Root):
+ 40 instancias
+\end_layout
+
+\begin_layout Standard
+Normal:
+ 87,832 instancias
+\end_layout
+
+\begin_layout Standard
+1.2 Objetivos
+\end_layout
+
+\begin_layout Standard
+Implementar y optimizar modelos de clasificación para detectar los 17 tipos de ataques presentes en el dataset filtrado
+\end_layout
+
+\begin_layout Standard
+Comparar el rendimiento entre Árboles de Decisión individuales y Random Forest
+\end_layout
+
+\begin_layout Standard
+Identificar los hiperparámetros óptimos mediante búsqueda sistemática
+\end_layout
+
+\begin_layout Standard
+Evaluar la robustez de los modelos mediante validación cruzada
+\end_layout
+
+\begin_layout Section
+Preprocesamiento de Datos
+\end_layout
+
+\begin_layout Subsection
+Limpieza y Filtrado
+\end_layout
+
+\begin_layout Standard
+El preprocesamiento inicial reveló importantes características del dataset:
+\end_layout
+
+\begin_layout Standard
+Registros duplicados eliminados:
+ 348,435 (70.5% del dataset original)
+\end_layout
+
+\begin_layout Standard
+Clases raras filtradas:
+ 6 clases con menos de 10 muestras (33 registros totales)
+\end_layout
+
+\begin_layout Standard
+Dataset final:
+ 145,553 registros con 17 clases distintas
+\end_layout
+
+\begin_layout Subsection
+Transformación de Variables
+\end_layout
+
+\begin_layout Standard
+Se aplicaron las siguientes transformaciones:
+\end_layout
+
+\begin_layout Standard
+Codificación de variables categóricas:
+ protocol_type,
+ service,
+ y flag mediante LabelEncoder
+\end_layout
+
+\begin_layout Standard
+Normalización:
+ StandardScaler para todas las 41 características numéricas
+\end_layout
+
+\begin_layout Standard
+División estratificada:
+ 70% entrenamiento (101,887),
+ 15% validación (21,833),
+ 15% prueba (21,833)
+\end_layout
+
+\begin_layout Subsection
+Desbalance de Clases
+\end_layout
+
+\begin_layout Standard
+El dataset presenta un severo desbalance,
+ con la clase U2R representando solo el 0.027% de las muestras.
+ Esta característica justifica:
+\end_layout
+
+\begin_layout Standard
+El uso de F1-score macro como métrica principal
+\end_layout
+
+\begin_layout Standard
+La necesidad de estratificación en la división de datos
+\end_layout
+
+\begin_layout Standard
+La consideración de pesos de clase en futuros modelos
+\end_layout
+
+\begin_layout Section
+Optimización con Optuna
+\end_layout
+
+\begin_layout Standard
+Para el proceso de optimización se utilizó el framework Optuna,
+ el cual proporciona un conjunto de funciones diseñadas para la búsqueda y ajuste automático de hiperparámetros.
+ Este enfoque permite seleccionar de manera sistemática los parámetros más adecuados en función de los objetivos definidos,
+ mejorando así la eficiencia y la precisión del modelo.
+\end_layout
+
+\begin_layout Subsection
+Diseño del Espacio de Búsqueda
+\end_layout
+
+\begin_layout Standard
+La función 
+\series bold
+optimize_decision_tree
+\series default
+ define un espacio de búsqueda de 5 dimensiones con aproximadamente 58,800 configuraciones posibles :
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename imagenes/hiperparamsRange.png
+	width 100line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Rango Hiperpárametros
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Rango Hiperparámetros"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Con esta configuración tenemos un tamaño del espacio de 28 × 99 × 50 × 2 × 3 = 831,600 configuraciones descritas en la imagen 
+\begin_inset CommandInset ref
+LatexCommand labelonly
+reference "fig:Rango Hiperparámetros"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Justificación de Rangos de Hiperparámetros
+\end_layout
+
+\begin_layout Standard
+A continuación se detalla la justificación de los rangos seleccionados para los hiperparámetros,
+ combinando análisis teóricos,
+ consideraciones estadísticas y evidencia empírica para garantizar un balance entre precisión,
+ robustez y eficiencia del modelo.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+max_depth ∈ [3,
+ 30]:
+ 
+\series default
+El hiperparámetro max_depth se exploró en el rango [3,
+ 30].
+ El límite inferior (3) garantiza un mínimo de expresividad,
+ suficiente para capturar interacciones de segundo orden y distinguir las categorías principales.
+ El límite superior (30),
+ aunque teóricamente inalcanzable por restricciones de datos,
+ permite máxima flexibilidad sin imponer un sesgo artificial.
+ La distribución de exploración mostró que el 12% de los ensayos se concentró en profundidades bajas (3–10,
+ menor precisión),
+ el 48% en valores intermedios (11–20,
+ equilibrio) y el 40% en profundidades altas (21–30,
+ mayor precisión).
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+min_samples_split ∈ [2,
+ 100]:
+
+\series default
+ Este hiperparámetro se exploró en el rango [2,
+ 100].
+ El valor mínimo (2) permite la máxima granularidad,
+ mientras que el máximo (100) representa el 0.098% del conjunto de entrenamiento,
+ definido en función de la heurística √n y ajustado por consideraciones computacionales.
+ En la práctica,
+ valores menores a 10 condujeron a overfitting,
+ el rango 10–30 mostró el mejor equilibrio (con selección óptima en 7) y valores superiores a 50 resultaron en underfitting por pérdida de patrones finos.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+min_samples_leaf ∈ [1,
+ 50]:
+
+\series default
+ min_samples_leaf se evaluó en el rango [1,
+ 50].
+ El valor mínimo (1) genera hojas singleton con alto riesgo de overfitting,
+ mientras que el máximo (50) equivale al 0.049% del conjunto de entrenamiento y resulta excesivamente conservador,
+ impidiendo la detección de clases minoritarias como U2R (28 muestras).
+ El valor óptimo identificado fue 3,
+ ya que mantiene la capacidad de reconocer patrones poco frecuentes sin comprometer la robustez del modelo.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+criterion ∈ {gini,
+ entropy}:
+\series default
+El hiperparámetro criterion se evaluó entre gini y entropy.
+ Teóricamente,
+ gini (O(n)) favorece divisiones balanceadas con un rango de [0,
+ 0.941],
+ mientras que entropy (O(n log n)) privilegia la pureza de nodos con un rango de [0,
+ 4.09].
+ Empíricamente,
+ entropy mostró mejor desempeño en el 100% de las configuraciones óptimas.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+max_features:
+
+\series default
+ En cuanto a max_features,
+ se analizaron tres opciones:
+ sqrt(41) ≈ 6.4 (reducción del 84%),
+ log2(41) ≈ 5.4 (reducción del 87%) y None (41,
+ sin reducción).
+ Aunque sqrt y log2 mejoraron la velocidad de entrenamiento (6x y 7x,
+ respectivamente) con una pérdida moderada de precisión (−3% y −4% en F1-score),
+ la opción seleccionada fue None,
+ por ofrecer la máxima precisión en el modelo final.
+\end_layout
+
+\end_body
+\end_document

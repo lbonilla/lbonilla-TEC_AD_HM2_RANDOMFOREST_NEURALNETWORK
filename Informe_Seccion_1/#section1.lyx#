@@ -1446,18 +1446,7 @@ Indica que ambos modelos son igualmente robustos para este dataset
 Tasa de Falsos Positivos:
 
 \series default
- Excelente en ambos casos (0.01%) ver figura 
-\begin_inset CommandInset ref
-LatexCommand labelonly
-reference "fig:Compración Falsos Positivos"
-plural "false"
-caps "false"
-noprefix "false"
-nolink "false"
-
-\end_inset
-
-
+ Excelente en ambos casos (0.01%)
 \end_layout
 
 \begin_layout Standard
@@ -1545,7 +1534,7 @@ Compración Falsos Positivos
 
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:Compración Falsos Positivos"
+name "fig:Compración F1-Score DT vrs RF-1"
 
 \end_inset
 
@@ -1623,32 +1612,52 @@ Conclusiones
 \end_layout
 
 \begin_layout Standard
-Algunos hallazgos principales son:
+6.1 Hallazgos Principales
 \end_layout
 
-\begin_layout Itemize
-Hiperparámetros óptimos reflejan la complejidad del problema:
- El valor max_depth = 28 sugiere que el modelo necesita capturar patrones muy específicos y detallados.
- Por su parte,
- min_samples_leaf = 3 indica la importancia de mantener sensibilidad frente a casos raros o minoritarios,
- mientras que criterion = 'entropy' se muestra superior al manejar clases múltiples desbalanceadas,
- favoreciendo la pureza de los nodos en el aprendizaje.
+\begin_layout Standard
+Hiperparámetros óptimos indican complejidad del problema:
 \end_layout
 
-\begin_layout Itemize
-Rendimiento de Random Forest:
- La optimización mostró que solo se requieren 60 árboles para alcanzar un desempeño competitivo,
- significativamente menor a los rangos típicos de 100–300 árboles.
- La mejora marginal observada (0.38% en F1-score) sugiere que incrementar la complejidad del modelo podría no justificar los costos computacionales adicionales.
+\begin_layout Standard
+max_depth=28 sugiere patrones muy específicos
 \end_layout
 
-\begin_layout Itemize
-Preparación para producción:
- Ambos modelos,
- árboles de decisión individuales y Random Forest,
- alcanzan F1-scores superiores al 86%,
- tasas de falsos positivos por debajo de 0.02% y tiempos de inferencia aceptables,
- demostrando que son adecuados para implementación práctica sin comprometer la eficiencia ni la precisión.
+\begin_layout Standard
+min_samples_leaf=3 indica necesidad de capturar casos raros
+\end_layout
+
+\begin_layout Standard
+criterion='entropy' superior para multiclase desbalanceada
+\end_layout
+
+\begin_layout Standard
+Random Forest muestra mejora marginal:
+\end_layout
+
+\begin_layout Standard
+Solo 60 árboles necesarios (vs.
+ 100-300 típicos)
+\end_layout
+
+\begin_layout Standard
+Mejora de 0.38% puede no justificar complejidad adicional
+\end_layout
+
+\begin_layout Standard
+Ambos modelos son production-ready:
+\end_layout
+
+\begin_layout Standard
+F1-scores > 86%
+\end_layout
+
+\begin_layout Standard
+FP rates < 0.02%
+\end_layout
+
+\begin_layout Standard
+Tiempos de inferencia aceptables
 \end_layout
 
 \end_body

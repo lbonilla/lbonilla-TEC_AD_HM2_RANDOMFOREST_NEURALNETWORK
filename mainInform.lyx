@@ -6,9 +6,89 @@
 \origin unavailable
 \textclass report
 \begin_preamble
-\title{Informe Final del Proyecto}
-\author{Luis Bonilla}
-\date{Septiembre 2025}
+
+
+% ===== Paquetes base =====
+\usepackage{babel}
+\usepackage{graphicx}
+% para [H]
+% tablas
+\usepackage{subcaption}% subfiguras EDA
+\usepackage{caption}
+\usepackage{listings}% para código
+\usepackage{xcolor}% colores
+% listas personalizadas
+\usepackage{array}% tablas avanzadas
+\usepackage{longtable}% tablas largas
+\usepackage{multirow}% celdas multirow
+\usepackage{url}% URLs
+\usepackage{fancyhdr}% encabezados personalizados
+
+
+
+% ===== Configuración de código =====
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{pythonstyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=pythonstyle}
+
+% ===== Dónde buscar imágenes =====
+\graphicspath{{data/}{data/figs_hist/}{figs_hist/}{./}}
+
+% ===== Inclusión segura de imágenes =====
+
+\newcommand{\safeincludegraphics}[2][]{%
+  \IfFileExists{#2}{\includegraphics[#1]{#2}}{\fbox{\texttt{#2 no encontrado}}}%
+}
+
+
+% ===== Datos del informe =====
+\title{%
+    \textbf{Análisis de Datos para Ciberseguridad}\\
+    \large Trabajo Práctico 2\\
+
+}
+\author{%
+    Deyber Hernández Gonzales\\
+    \texttt{d.hernandez.9@estudiantec.cr}\\
+    \texttt{2025800354}
+    \and
+    Luis Bonilla Hernández\\
+    \texttt{lbonilla@estudiantec.cr}\\
+    \texttt{2023123456}
+}
+\date{    Instituto Tecnológico de Costa Rica\\
+    Escuela de Ingeniería en Computación\\
+    Programa de Ciencias de Datos\\
+    \today
+}
+
+% ===== Encabezados =====
+
+\fancyhf{}
+\rhead{Trabajo Práctico 2 - Ciberseguridad}
+\lhead{TEC - 2025}
+\cfoot{\thepage}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children no
@@ -112,6 +192,17 @@ maketitle
 \begin_layout Standard
 \begin_inset CommandInset toc
 LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "Informe_Seccion_0/seccion0.lyx"
+literal "false"
 
 \end_inset
 
