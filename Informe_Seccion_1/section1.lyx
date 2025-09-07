@@ -250,8 +250,8 @@ La siguiente tabla presenta las tres arquitecturas más destacadas obtenidas tra
 
 \begin_layout Standard
 \begin_inset Float table
-placement document
-alignment document
+placement H
+alignment center
 wide false
 sideways false
 status open
@@ -269,7 +269,7 @@ centering
 
 \end_inset
 
-
+ 
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="7">
 <features tabularvalignment="middle">
