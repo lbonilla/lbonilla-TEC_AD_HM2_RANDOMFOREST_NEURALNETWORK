@@ -1,0 +1,11 @@
+run,seed,best_val_f1_macro,test_accuracy,test_f1_macro,model_path
+1,11,0.6291529323021746,0.9608938547486033,0.5907865984241043,/content/drive/MyDrive/TEC_AD_TP2/models/fcn_best_run_01_seed_11.pt
+2,22,0.6771181519033866,0.965518820404799,0.5949703758468962,/content/drive/MyDrive/TEC_AD_TP2/models/fcn_best_run_02_seed_22.pt
+3,33,0.6596778318047563,0.9738071251946149,0.6299072434059829,/content/drive/MyDrive/TEC_AD_TP2/models/fcn_best_run_03_seed_33.pt
+4,44,0.6559790368326357,0.9590163934426229,0.6011072266094194,/content/drive/MyDrive/TEC_AD_TP2/models/fcn_best_run_04_seed_44.pt
+5,55,0.6533241279636003,0.9632750251854565,0.6200672773570653,/content/drive/MyDrive/TEC_AD_TP2/models/fcn_best_run_05_seed_55.pt
+6,66,0.6563288829613853,0.9611228134444546,0.6133660206126227,/content/drive/MyDrive/TEC_AD_TP2/models/fcn_best_run_06_seed_66.pt
+7,77,0.6479992393215285,0.9486216686509754,0.5562578866498791,/content/drive/MyDrive/TEC_AD_TP2/models/fcn_best_run_07_seed_77.pt
+8,88,0.6407426741035323,0.9427145342980127,0.5921311031259914,/content/drive/MyDrive/TEC_AD_TP2/models/fcn_best_run_08_seed_88.pt
+9,99,0.6389004587244959,0.9576884330066856,0.6016192842032696,/content/drive/MyDrive/TEC_AD_TP2/models/fcn_best_run_09_seed_99.pt
+10,1234,0.6549279953080496,0.9724333730195073,0.6050820998814822,/content/drive/MyDrive/TEC_AD_TP2/models/fcn_best_run_10_seed_1234.pt

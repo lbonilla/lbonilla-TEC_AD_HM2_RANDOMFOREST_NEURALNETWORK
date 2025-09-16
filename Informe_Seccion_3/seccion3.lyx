@@ -1,0 +1,1322 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass report
+\use_default_options true
+\maintain_unincluded_children no
+\language spanish
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008080
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content true
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Part
+Tabnet
+\end_layout
+
+\begin_layout Chapter
+Investigación
+\end_layout
+
+\begin_layout Standard
+TabNet es una arquitectura de aprendizaje profundo diseñada específicamente para datos tabulares.
+ Introducida por Arık & Pfister,
+ usa una secuencia de pasos con atención para seleccionar de forma dinámica subconjuntos de características (masks) en cada paso,
+ procesarlas con bloques de transformación y agregar la información para la predicción final.
+ Esto le da a TabNet dos propiedades clave:
+ alto rendimiento competitivo en tareas tabulares y interpretabilidad vía máscaras de selección de características.
+\end_layout
+
+\begin_layout Section
+Arquitectura
+\end_layout
+
+\begin_layout Subsubsection*
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename /Users/luisbonilla/Developments/lbonilla-TEC_AD_HM2_RANDOMFOREST_NEURALNETWORK/Images/sec_3_TabNet-Architecture-from-the-official-TabNet-paper-78.png
+	width 100line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Arquitectura TabNet
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arquitectura TabNet"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Usa tres componentes principales (ver diagramas arriba):
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Feature transformer
+\series default
+ (Transformador de características)
+\end_layout
+
+\begin_layout Standard
+Es una red de bloques GLU (Gated Linear Unit) con BatchNorm y conexiones residuales.
+ Parte de estos bloques son compartidos entre pasos y otros son específicos de paso,
+ lo que permite reusar representaciones y al mismo tiempo adaptar información en cada paso.
+ 
+\end_layout
+
+\begin_layout Standard
+cdn.aaai.org
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Attentive transformer
+\series default
+ (Transformador atencional) :
+ Calcula una máscara de atención por característica usando la representación de estado previa y una normalización (incluye el término prior para evitar repetir las mismas características).
+ La salida se pasa por sparsemax para obtener una selección esparsa (muchas entradas cerca de cero),
+ esto produce la máscara de características que guía qué columnas usar en ese paso.
+\end_layout
+
+\begin_layout Standard
+cdn.aaai.org
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Sparse feature mask (Máscara de características)
+\end_layout
+
+\begin_layout Standard
+Multiplica (elementwise) la entrada original (o su embedding) para “enmascarar” características irrelevantes.
+ Las máscaras de cada paso se pueden agregar para obtener importancia global de características (interpretabilidad).
+ 
+\end_layout
+
+\begin_layout Standard
+cdn.aaai.org
+\end_layout
+
+\begin_layout Standard
+Además hay un mecanismo de split/agg:
+ cada paso produce una parte de la representación que se añade al acumulador de salida (decision output) y otra parte que alimenta la atención del siguiente paso.
+\end_layout
+
+\begin_layout Section
+Funcionamiento paso a paso (flujo de datos)
+\end_layout
+
+\begin_layout Enumerate
+Entrada:
+ vectores tabulares (numéricos y/o embeddings de categóricos).
+\end_layout
+
+\begin_layout Enumerate
+Step t = 1..T (decisión secuencial):
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+El attentive transformer toma el estado previo y calcula la máscara 𝑀𝑡 (sparsemax + prior scale).
+\end_layout
+
+\begin_layout Itemize
+Se aplica 𝑀𝑡 a las características (selección suave pero esparsa).
+\end_layout
+
+\begin_layout Itemize
+La parte seleccionada pasa por el feature transformer (bloques GLU compartidos + específicos) que produce una representación.
+\end_layout
+
+\begin_layout Itemize
+La representación se divide:
+ una fracción se acumula en la salida final y la otra alimenta la atención del siguiente paso.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Después de T pasos,
+ la representación acumulada pasa por un FC final para clasificación/regresión.
+\end_layout
+
+\begin_layout Enumerate
+Las máscaras 𝑀𝑡 por paso se agregan para medir la importancia de cada característica (explicación local y global).
+ 
+\end_layout
+
+\begin_layout Standard
+( La figura del paper muestra exactamente los bloques Feature Transformer,
+ Attentive Transformer y la máscara.)
+\end_layout
+
+\begin_layout Section
+Ventajas para clasificación de datos estructurados
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Selección dinámica y esparsa de características
+\series default
+:
+ al escoger subconjuntos diferentes por paso,
+ TabNet concentra capacidad de modelado en las características más relevantes por decisión,
+ similar en espíritu a ramas de un árbol pero aprendida end-to-end.
+ Esto mejora la eficiencia representacional.
+\end_layout
+
+\begin_layout Standard
+cdn.aaai.org
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Interpretabilidad incorporada
+\series default
+:
+ las máscaras 𝑀𝑡 ofrecen explicaciones por paso (y globales al agregarlas),
+ lo que facilita entender qué columnas fueron determinantes—
+algo valioso en entornos regulados (salud,
+ finanzas).
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Capacidad para combinar tipos de datos
+\series default
+:
+ puede integrar embeddings de categóricos y features numéricos y procesarlos de forma conjunta en los bloques.
+\end_layout
+
+\begin_layout Itemize
+B
+\series bold
+uen rendimiento en muchos problemas tabulares
+\series default
+:
+ en la literatura TabNet ha mostrado competir con modelos clásicos (GBDTs) y con otras redes para tabulares en varias tareas;
+ además,
+ extensiones y ensamblados (p.
+ ej.
+ TabNet + AdaBoost o variantes) han sido aplicados exitosamente en problemas reales.
+\end_layout
+
+\begin_layout Section
+Limitaciones y puntos a considerar
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+No siempre supera a GBDT en todos los datasets
+\series default
+:
+ estudios posteriores (p.
+ ej.
+ FT-Transformer / Revisiting DL for Tabular Data) muestran que arquitecturas Transformer adaptadas o incluso arquitecturas residuales simples pueden vencer a TabNet en ciertos benchmarks y que los resultados dependen fuertemente del dataset y la ingeniería de hiperparámetros.
+ Por tanto,
+ TabNet es una opción fuerte pero no la solución universal.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Costo computacional
+\series default
+:
+ TabNet puede ser más costoso en entrenamiento que un modelo XGBoost/LightGBM típico,
+ especialmente en datasets grandes,
+ aunque su paralelismo y uso de máscaras ayudan a controlar la complejidad.
+\end_layout
+
+\begin_layout Standard
+cdn.aaai.org
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Sensibilidad a hiperparámetros
+\series default
+:
+ número de steps,
+ tamaño de n_d / n_a,
+ y la entropía de las máscaras (sparsemax vs softmax) influyen fuertemente en desempeño;
+ requiere cross-validation y tuning.
+\end_layout
+
+\begin_layout Section
+Lecturas y fuentes 
+\end_layout
+
+\begin_layout Itemize
+Arık,
+ S.
+ O.
+ & Pfister —
+ TabNet:
+ Attentive Interpretable Tabular Learning (paper original,
+ arXiv / AAAI).
+\end_layout
+
+\begin_layout Itemize
+Gorishniy et al.
+ —
+ Revisiting Deep Learning Models for Tabular Data (FT-Transformer) —
+ compara arquitecturas y muestra cuándo otros enfoques superan a TabNet.
+\end_layout
+
+\begin_layout Itemize
+Somepalli et al.
+ —
+ SAINT:
+ Improved Neural Networks for Tabular Data via Row Attention —
+ otro enfoque Transformer para tabulares.
+\end_layout
+
+\begin_layout Itemize
+Implementaciones y guías prácticas (tutorials / Vertex AI docs) para poner TabNet en producción.
+\end_layout
+
+\begin_layout Section
+Optimización 
+\end_layout
+
+\begin_layout Standard
+Hiperparámetros clave a optimizar
+\end_layout
+
+\begin_layout Enumerate
+Dimensiones de decisión y atención
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+n_d y n_a:
+ determinan el tamaño de las capas latentes para la rama de decisión (decision step) y la de atención.
+\end_layout
+
+\begin_layout Itemize
+Valores típicos:
+ 8 – 64.
+\end_layout
+
+\begin_layout Itemize
+Regla:
+ mayores valores → más capacidad,
+ pero más riesgo de sobreajuste y mayor costo computacional.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Número de pasos de decisión (n_steps)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Define cuántas veces se aplican máscaras atencionales y transformadores.
+\end_layout
+
+\begin_layout Itemize
+Valores típicos:
+ 3 – 10.
+\end_layout
+
+\begin_layout Itemize
+Más pasos permiten mayor exploración de combinaciones de características,
+ pero aumentan el tiempo de entrenamiento.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Regularización de sparsity (sparsity_loss_weight)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Controla cuán esparsa es la máscara de atención.
+\end_layout
+
+\begin_layout Itemize
+Valores típicos:
+ 1e-5 – 1e-2.
+\end_layout
+
+\begin_layout Itemize
+Regula la interpretabilidad y evita que todas las features se seleccionen en cada paso.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Otras variables de entrenamiento
+\end_layout
+
+\begin_layout Standard
+batch_size:
+ 512 – 4096,
+ depende del tamaño del dataset.
+\end_layout
+
+\begin_layout Standard
+virtual_batch_size:
+ útil para batch normalization fantasma;
+ típicamente batch_size/8.
+\end_layout
+
+\begin_layout Standard
+momentum y gamma:
+ influyen en la dinámica de aprendizaje de los transformadores.
+\end_layout
+
+\begin_layout Standard
+Parámetros de optimización
+\end_layout
+
+\begin_layout Standard
+Learning rate (lr):
+ 1e-3 – 1e-1 (log-uniform).
+\end_layout
+
+\begin_layout Standard
+Scheduler:
+ a menudo se usa StepLR o ReduceLROnPlateau junto a early stopping.
+\end_layout
+
+\begin_layout Standard
+Weight decay:
+ 1e-6 – 1e-3 para regularización.
+\end_layout
+
+\begin_layout Section
+Selección de parámetros de optimización 
+\end_layout
+
+\begin_layout Standard
+Basándose en la arquitectura de TabNet y su funcionamiento,
+ se seleccionaron los siguientes hiperparámetros para optimización:
+\end_layout
+
+\begin_layout Subsubsection*
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename /Users/luisbonilla/Developments/lbonilla-TEC_AD_HM2_RANDOMFOREST_NEURALNETWORK/Images/sec_3_paramsOptimizationOptuna.png
+	width 100line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Parámetros Optimización Optuna
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Parámetros Optmización Optuna"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Parámetros seleccionados y justificación
+\end_layout
+
+\begin_layout Enumerate
+Dimensiones de la red (n_d,
+ n_a)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Se busca que las dimensiones de decisión y atención sean iguales,
+ como sugiere el artículo original.
+\end_layout
+
+\begin_layout Itemize
+Rango:
+ 8–64 (en pasos de 8).
+\end_layout
+
+\begin_layout Itemize
+Justificación:
+ valores pequeños reducen capacidad y riesgo de sobreajuste,
+ mientras que valores grandes capturan más interacciones complejas,
+ aunque con mayor costo computacional.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Número de pasos de decisión (n_steps)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Rango:
+ 3–10.
+\end_layout
+
+\begin_layout Itemize
+Justificación:
+ tres pasos permiten al modelo capturar interacciones mínimas entre variables,
+ y hasta diez pasos evitan sobreajuste y exceso de cómputo.
+\end_layout
+
+\begin_layout Itemize
+Factor de relajación para máscaras (gamma)
+\end_layout
+
+\begin_layout Itemize
+Rango:
+ 1.0–2.0.
+\end_layout
+
+\begin_layout Itemize
+Justificación:
+ regula la diversidad de selección de características entre pasos.
+ Un valor cercano a 1 favorece reutilización,
+ mientras que valores mayores promueven explorar distintas combinaciones.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Tamaño de lote (batch_size)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Opciones:
+ 256,
+ 512,
+ 1024 (potencias de 2 para eficiencia en GPU).
+\end_layout
+
+\begin_layout Itemize
+Justificación:
+ permite balancear estabilidad de entrenamiento (batches grandes) con capacidad de generalización (batches medianos).
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Learning Rate (lr)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Rango logarítmico:
+ 1e-4 – 1e-1.
+\end_layout
+
+\begin_layout Itemize
+Justificación:
+ la escala log-uniforme permite explorar tanto valores pequeños (convergencia estable) como valores más grandes (aprendizaje rápido).
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Regularización de sparsity (lambda_sparse)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Rango logarítmico:
+ 1e-6 – 1e-3.
+\end_layout
+
+\begin_layout Itemize
+Justificación:
+ controla el grado de esparsidad en la selección de características;
+ valores pequeños hacen el modelo más denso,
+ mientras que valores altos promueven interpretabilidad y reducen sobreajuste.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Momentum para BatchNorm (momentum)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Rango:
+ 0.01 – 0.4 (pasos de 0.01).
+\end_layout
+
+\begin_layout Itemize
+Justificación:
+ regula la rapidez con que BatchNorm actualiza estadísticas internas;
+ valores bajos estabilizan,
+ valores altos aceleran la adaptación.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Tipo de máscara de atención (mask_type)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Opciones:
+ sparsemax,
+ entmax.
+\end_layout
+
+\begin_layout Itemize
+Justificación:
+ sparsemax fue la opción original en TabNet,
+ pero entmax puede producir distribuciones aún más esparsas y,
+ en algunos casos,
+ mejorar interpretabilidad y rendimiento.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+En este proyecto,
+ los rangos de hiperparámetros se definieron de manera estratégica para cubrir un espectro amplio de configuraciones sin incurrir en costos computacionales innecesarios.
+ La optimización con Optuna se ejecutó con un número suficiente de ensayos (≥50),
+ lo que permitió explorar de forma eficiente el espacio de búsqueda y encontrar combinaciones cercanas al óptimo.
+ En la práctica,
+ los parámetros con mayor impacto en el rendimiento del modelo resultaron ser n_d,
+ n_a,
+ n_steps,
+ lr y lambda_sparse,
+ los cuales requieren especial atención en futuros análisis de sensibilidad y ajustes finos.
+\end_layout
+
+\begin_layout Section
+Proceso de Optimización con Optuna
+\end_layout
+
+\begin_layout Standard
+Se ejecutaron 20 trials de optimización bayesiana,
+ observando una convergencia progresiva hacia configuraciones con:
+\end_layout
+
+\begin_layout Itemize
+Dimensiones altas (n_d,
+ n_a ≥ 48)
+\end_layout
+
+\begin_layout Itemize
+Pasos moderados (n_steps = 4)
+\end_layout
+
+\begin_layout Itemize
+Gamma elevado (1.7)
+\end_layout
+
+\begin_layout Itemize
+Batch size grande (1024)
+\end_layout
+
+\begin_layout Itemize
+Mask type 'entmax' consistentemente superior
+\end_layout
+
+\begin_layout Chapter
+Evaluación Experimental
+\end_layout
+
+\begin_layout Section
+Mejores Configuraciones
+\end_layout
+
+\begin_layout Subsection
+Configuración 1 (Trial 17)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+n_d:
+ 56,
+ n_a:
+ 56,
+ n_steps:
+ 4,
+ gamma:
+ 1.7
+\end_layout
+
+\begin_layout Plain Layout
+batch_size:
+ 1024,
+ lr:
+ 0.0139,
+ lambda_sparse:
+ 1.85e-5
+\end_layout
+
+\begin_layout Plain Layout
+momentum:
+ 0.32,
+ mask_type:
+ 'entmax'
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Con un F1-score de 0.8325,
+ esta configuración se posiciona como la mejor dentro de los experimentos realizados.
+ El desempeño refleja un balance adecuado entre precisión y recall,
+ lo cual indica que el modelo no solo logra identificar correctamente una alta proporción de instancias positivas,
+ sino que también mantiene bajo el número de falsos negativos.
+ La arquitectura adoptada,
+ con dimensiones representacionales amplias (≥ 56),
+ permite al modelo capturar relaciones complejas en los datos sin perder estabilidad.
+ El número moderado de pasos asegura que la red no incurra en sobreajuste,
+ mientras que la activación entmax introduce un control más fino de la dispersión de la atención,
+ reduciendo la dependencia de variables poco relevantes y favoreciendo interpretabilidad.
+\end_layout
+
+\begin_layout Subsection
+Configuración 2 (Trial 18)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+n_d:
+ 56,
+ n_a:
+ 64,
+ n_steps:
+ 4,
+ gamma:
+ 1.7
+\end_layout
+
+\begin_layout Plain Layout
+batch_size:
+ 1024,
+ lr:
+ 0.0128,
+ lambda_sparse:
+ 1.63e-5
+\end_layout
+
+\begin_layout Plain Layout
+momentum:
+ 0.34,
+ mask_type:
+ 'entmax'
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La segunda mejor configuración,
+ con un F1-score de 0.8309,
+ exhibe un rendimiento muy cercano al de la Configuración 1,
+ lo que demuestra consistencia en la exploración del espacio de hiperparámetros.
+ Aunque ligeramente inferior en desempeño,
+ mantiene las mismas características clave:
+ dimensiones representacionales amplias,
+ número controlado de pasos y el uso de entmax como función de activación.
+ Esto refuerza la conclusión de que la combinación de mayor capacidad de representación con un control adecuado del sparsity constituye una estrategia óptima para este problema.
+\end_layout
+
+\begin_layout Subsection
+Conclusión
+\end_layout
+
+\begin_layout Standard
+Ambas configuraciones muestran arquitecturas robustas con alta capacidad representacional (dimensiones ≥ 56),
+ pasos moderados que evitan overfitting,
+ y uso consistente de 'entmax' que proporciona mejor control de sparsity que 'sparsemax'.
+\end_layout
+
+\begin_layout Section
+Protocolo Experimental
+\end_layout
+
+\begin_layout Standard
+10 particiones aleatorias de entrenamiento/validación/prueba (70/15/15%)
+\end_layout
+
+\begin_layout Standard
+4 modelos evaluados:
+ 2 configuraciones × 2 esquemas de pesado
+\end_layout
+
+\begin_layout Standard
+Métricas:
+ F1-score promedio y tasa de falsos negativos
+\end_layout
+
+\begin_layout Section
+Resultados Experimentales
+\end_layout
+
+\begin_layout Standard
+Se evaluaron los dos modelos propuestos,
+ considerando en cada caso su desempeño con y sin la aplicación del pesado de observaciones según la prevalencia de clase,
+ implementado en la sección previa.
+ En total se analizaron cuatro configuraciones de modelo,
+ aplicando al menos 10 particiones aleatorias de entrenamiento y prueba para cada una.
+ Los resultados obtenidos se resumen en la siguiente tabla,
+ donde se reportan los valores individuales,
+ así como la media y la desviación estándar del F1-score y la tasa promedio de falsos negativos correspondientes a cada modelo.
+\end_layout
+
+\begin_layout Subsubsection*
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename /Users/luisbonilla/Developments/lbonilla-TEC_AD_HM2_RANDOMFOREST_NEURALNETWORK/Images/sec_3_Results.png
+	width 100line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Resultados Experimentales
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Resultado Experimentales"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Análisis de Resultados
+\end_layout
+
+\begin_layout Subsection
+Hallazgos Principales
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Trade-off F1-score vs Falsos Negativos
+\series default
+:
+\end_layout
+
+\begin_layout Itemize
+Los modelos sin pesos de clase logran mejor F1-score general (0.855 vs 0.836)
+\end_layout
+
+\begin_layout Itemize
+Los modelos con pesos reducen significativamente los falsos negativos (28-29% de reducción)
+\end_layout
+
+\begin_layout Itemize
+Esta diferencia refleja el sesgo hacia clases mayoritarias en datasets desbalanceados
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Estabilidad del Modelo:
+\end_layout
+
+\begin_layout Itemize
+El pesado de clases reduce la variabilidad (σ = 0.025 vs 0.040)
+\end_layout
+
+\begin_layout Itemize
+Ambas configuraciones muestran comportamiento similar,
+ validando la robustez arquitectural
+\end_layout
+
+\begin_layout Subsection
+Interpretabilidad mediante Análisis de Características
+\end_layout
+
+\begin_layout Standard
+El análisis de sparsity revela capacidades interpretativas destacadas:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+61% de reducción dimensional efectiva
+\series default
+ (16/41 características para 90% importancia)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Top características
+\series default
+:
+ feature_37 (12.8%),
+ feature_22 (10.1%),
+ feature_31 (9.0%)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Selección automática
+\series default
+ de características relevantes sin ingeniería manual
+\end_layout
+
+\begin_layout Section
+Comparación con Modelos Anteriores
+\end_layout
+
+\begin_layout Subsection
+Ventajas de TabNet
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Interpretabilidad Nativa:
+\end_layout
+
+\begin_layout Itemize
+Máscaras de atención proporcionan explicaciones locales y globales
+\end_layout
+
+\begin_layout Itemize
+Identificación automática de características críticas
+\end_layout
+
+\begin_layout Itemize
+Superior a Random Forest en transparencia del proceso decisional
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Capacidad Representacional:
+\end_layout
+
+\begin_layout Itemize
+Manejo sofisticado de interacciones no lineales complejas
+\end_layout
+
+\begin_layout Itemize
+Procesamiento secuencial permite aprendizaje de dependencias temporales
+\end_layout
+
+\begin_layout Itemize
+Flexibilidad arquitectural para diferentes tipos de datos tabulares
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Selección Adaptativa:
+\end_layout
+
+\begin_layout Itemize
+Sparsity controlada reduce overfitting
+\end_layout
+
+\begin_layout Itemize
+Enfoque dinámico vs selección estática de características
+\end_layout
+
+\begin_layout Itemize
+Potencial para transfer learning entre datasets relacionados
+\end_layout
+
+\begin_layout Subsection
+Desventajas de TabNet
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Costo Computacional:
+\end_layout
+
+\begin_layout Itemize
+Tiempo de entrenamiento significativamente mayor (~60s vs ~5s para Random Forest)
+\end_layout
+
+\begin_layout Itemize
+Requerimientos de memoria GPU (~200MB)
+\end_layout
+
+\begin_layout Itemize
+Complejidad de hiperparámetros requiere optimización extensiva
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Rendimiento Relativo:
+\end_layout
+
+\begin_layout Itemize
+F1-score (0.855) comparable pero no superior a Random Forest
+\end_layout
+
+\begin_layout Itemize
+Incremento marginal en precisión no justifica siempre el costo adicional
+\end_layout
+
+\begin_layout Itemize
+Sensibilidad a inicialización y configuración de hiperparámetros
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Escalabilidad:
+\end_layout
+
+\begin_layout Itemize
+Mayor overhead para datasets pequeños-medianos
+\end_layout
+
+\begin_layout Itemize
+Infraestructura más compleja para despliegue productivo
+\end_layout
+
+\begin_layout Itemize
+Dependencia de frameworks de deep learning
+\end_layout
+
+\begin_layout Subsection
+Conclusiones
+\end_layout
+
+\begin_layout Standard
+TabNet demuestra ser una arquitectura competitiva para detección de intrusos,
+ ofreciendo un balance único entre rendimiento y interpretabilidad.
+ Si bien no supera significativamente a métodos tradicionales en precisión pura,
+ su capacidad de explicación automática y selección adaptativa de características lo posicionan como una opción valiosa para aplicaciones donde la transparencia del modelo es crítica.
+\end_layout
+
+\begin_layout Standard
+La implementación exitosa requiere inversión sustancial en optimización de hiperparámetros y recursos computacionales,
+ factores que deben evaluarse contra los beneficios específicos del caso de uso.
+\end_layout
+
+\end_body
+\end_document

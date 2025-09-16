@@ -4,7 +4,7 @@
 \begin_header
 \save_transient_properties true
 \origin unavailable
-\textclass article
+\textclass report
 \begin_preamble
 \usepackage{placeins}   % para \FloatBarrier
 \usepackage{caption}    % para \captionof en tablas no flotantes
@@ -107,21 +107,8 @@
 
 \begin_body
 
-\begin_layout Title
-Análisis de Datos para Ciberseguridad - Trabajo Práctico 2
-\end_layout
-
-\begin_layout Title
-Parte II:
- Implementación de Redes Neuronales FCN
-\end_layout
-
-\begin_layout Author
-Grupo X - Dataset KDD99
-\end_layout
-
-\begin_layout Date
-Septiembre 2025
+\begin_layout Part
+Implementación de Redes Neuronales FCN
 \end_layout
 
 \begin_layout Section

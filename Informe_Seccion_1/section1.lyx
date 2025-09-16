@@ -88,15 +88,23 @@
 
 \begin_body
 
-\begin_layout Section
-Optimización de Hiperparámetros
+\begin_layout Part
+Árboles de Decisión y Random forest
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Chapter
 Árbol de Decisión
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Section
+Optimización 
+\end_layout
+
+\begin_layout Subsection
 Espacio de Búsqueda y Justificación
 \end_layout
 
@@ -238,7 +246,7 @@ Selección:
  - El modelo se beneficia de toda la información disponible
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Configuraciones Óptimas
 \end_layout
 
@@ -565,7 +573,7 @@ Mejores arquitecturas árbol de decisión
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Gráficos del proceso de Optimización
 \end_layout
 
@@ -696,7 +704,7 @@ name "fig:Optimización Árbol de Decisión"
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Gráfico de Importancia de Parámetros
 \end_layout
 
@@ -820,12 +828,12 @@ name "fig:Importancia de parámetros"
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Chapter
 Random Forest
 \end_layout
 
-\begin_layout Subsubsection
-Optimización del Número de Árboles
+\begin_layout Section
+Optimización
 \end_layout
 
 \begin_layout Standard
@@ -861,7 +869,7 @@ Valor óptimo:
  sugiere que el dataset tiene patrones claros que no requieren extensive averaging
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Parámetros Fijos Justificados
 \end_layout
 
@@ -903,7 +911,7 @@ max_features='sqrt':
  decorrelaciona árboles
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Gráficos del proceso de Optimización
 \end_layout
 
@@ -1127,16 +1135,37 @@ name "fig:Optimización random forests-1"
 
 \end_layout
 
-\begin_layout Section
+\begin_layout Chapter
 Resultados Experimentales
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Rendimiento Comparativo
 \end_layout
 
 \begin_layout Standard
-ModeloF1-score (media)F1-score (std)FP Rate (media)FP Rate (std)Árbol de Decisión (mejor)0.86890.03150.00010.0000Random Forest (60 árboles)0.87220.03250.00010.0000
+El Árbol de Decisión alcanzó un F1-score promedio de 0.8689,
+ con una desviación estándar de 0.0315,
+ lo que refleja un desempeño sólido y estable en las distintas particiones de los datos.
+ Su tasa de falsos positivos (FP Rate) fue prácticamente nula (0.0001 en promedio,
+ con desviación estándar cero),
+ lo que indica que el modelo rara vez clasifica erróneamente ejemplos negativos como positivos.
+ Este comportamiento lo convierte en un modelo atractivo por su simplicidad e interpretabilidad,
+ además de mantener un costo computacional bajo tanto en entrenamiento como en predicción.
+\end_layout
+
+\begin_layout Standard
+El Random Forest,
+ configurado con 60 árboles,
+ obtuvo un F1-score promedio de 0.8722,
+ ligeramente superior al Árbol de Decisión,
+ aunque con una desviación estándar similar (0.0325).
+ La mejora,
+ aunque marginal,
+ sugiere que la combinación de múltiples árboles mediante bagging efectivamente incrementa la capacidad del modelo para generalizar y reduce el riesgo de sobreajuste asociado a un único árbol.
+ Al igual que en el Árbol de Decisión,
+ la tasa de falsos positivos fue prácticamente nula,
+ lo que indica que el ensamble no sacrifica precisión en aras de mayor cobertura.
 \end_layout
 
 \begin_layout Standard
@@ -1296,7 +1325,13 @@ Random Forest (60 árboles)
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Standard
+Ambos modelos muestran un rendimiento muy competitivo,
+ con diferencias pequeñas pero consistentes a favor del Random Forest,
+ lo cual es coherente con la naturaleza del ensamble al ofrecer mayor robustez frente a la variabilidad de los datos.
+\end_layout
+
+\begin_layout Section
 Análisis de Resultados Comparativos
 \end_layout
 
@@ -1557,7 +1592,7 @@ name "fig:Compración Falsos Positivos"
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Importancia de Características
 \end_layout
 
