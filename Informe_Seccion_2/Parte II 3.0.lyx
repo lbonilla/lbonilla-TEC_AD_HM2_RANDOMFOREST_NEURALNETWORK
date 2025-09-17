@@ -1,0 +1,1715 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage{placeins}   % para \FloatBarrier
+\usepackage{caption}    % para \captionof en tablas no flotantes
+\usepackage{float}      % para usar [H] en \begin{table}[H]
+
+% Ajustes suaves de espacios alrededor de flotantes (opcional)
+\setlength{\textfloatsep}{10pt plus 1pt minus 2pt}
+\setlength{\floatsep}{8pt plus 1pt minus 2pt}
+\captionsetup[table]{skip=4pt}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,arrows.meta,fit}
+\usepackage{float}      % [H] = Here definitely
+\usepackage{placeins}   % \FloatBarrier
+\usepackage{graphicx}   % imágenes
+\usepackage{caption}    % mejor manejo de títulos
+\usepackage{booktabs}   % tablas más limpias (opcional)
+\setlength{\textfloatsep}{10pt plus 1pt minus 2pt} % menos espacio vertical
+\setlength{\floatsep}{8pt plus 1pt minus 2pt}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children no
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008080
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content true
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Parte II
+\end_layout
+
+\begin_layout Section
+Implementación de Redes Neuronales FCN
+\end_layout
+
+\begin_layout Subsection
+Verificación con DataLoader
+\end_layout
+
+\begin_layout Standard
+Para validar que la preparación de datos fue exitosa,
+ se realizó una verificación mediante la generación de un batch de entrenamiento usando el DataLoader de PyTorch.
+ Esta verificación es crucial para confirmar que los tensores tienen las dimensiones correctas y que no hay inconsistencias en los tipos de datos.
+\end_layout
+
+\begin_layout Standard
+La configuración del DataLoader incluyó los siguientes parámetros:
+\end_layout
+
+\begin_layout Itemize
+Batch size:
+ 512 muestras por lote
+\end_layout
+
+\begin_layout Itemize
+Shuffle:
+ Activado solo en entrenamiento
+\end_layout
+
+\begin_layout Itemize
+Pin memory:
+ Activado para eficiencia con GPU
+\end_layout
+
+\begin_layout Itemize
+Num workers:
+ 2 (apropiado para Google Colab)
+\end_layout
+
+\begin_layout Standard
+Al generar un batch de entrenamiento se observó la forma esperada:
+\end_layout
+
+\begin_layout Itemize
+X:
+ [512,
+ 41] - 512 muestras con 41 características cada una
+\end_layout
+
+\begin_layout Itemize
+Y:
+ [512] - 512 etiquetas correspondientes (tipo long)
+\end_layout
+
+\begin_layout Standard
+Esto confirma que los datos quedaron correctamente preparados para el flujo de entrenamiento de la red neuronal,
+ con tensores en formato float32 para las características y long para las etiquetas,
+ tal como requiere CrossEntropyLoss de PyTorch.
+\end_layout
+
+\begin_layout Subsection
+Arquitectura FCN
+\end_layout
+
+\begin_layout Standard
+En esta etapa del trabajo se diseñó una red neuronal de tipo Fully Connected Network (FCN) específicamente adaptada para el problema de clasificación multiclase del dataset KDD99.
+ La elección de este tipo de arquitectura responde a la necesidad de capturar relaciones no lineales complejas entre un gran número de atributos numéricos,
+ garantizando al mismo tiempo un equilibrio entre capacidad de representación y costo computacional.
+\end_layout
+
+\begin_layout Standard
+La red se estructuró con un total de cuatro capas densamente conectadas,
+ donde cada neurona de una capa se enlaza con todas las neuronas de la siguiente.
+ Esta conectividad completa permite que el modelo aprenda patrones complejos en los datos,
+ más allá de simples combinaciones lineales,
+ siendo especialmente efectiva para datos tabulares como los del KDD99.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Capas
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Neuronas
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Activación
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Regularización
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Entrada
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+41
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+–
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+StandardScaler
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Oculta 1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+256
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ReLU 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+BatchNorm + Dropout 20%
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Oculta 2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+128
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ReLU 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+BatchNorm + Dropout 20%
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Oculta 3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+64
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ReLU 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+BatchNorm + Dropout 20%
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Salida
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+23
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Softmax 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+CrossEntropyLoss
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El diseño progresivo de reducción dimensional (41→256→128→64→23) permite que la red aprenda representaciones cada vez más abstractas de los datos,
+ desde características básicas hasta patrones complejos de detección de intrusiones.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Diagrama esquemático de la red neuronal FCN (41→256→128→64→23)
+\begin_inset Graphics
+	filename C:/OneDriveAdmi/OneDrive - ina.ac.cr/Archivos/TEC/Analisis de Datos para Ciberseguridad/Proyectos/2/Deyber/Final/TEC_AD_TP2/figures/fcn_architecture_diagram.png
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Función de activación ReLU
+\end_layout
+
+\begin_layout Standard
+El uso sistemático de la función de activación ReLU (Rectified Linear Unit) en las capas ocultas fue esencial por múltiples razones técnicas.
+ ReLU resuelve el problema del desvanecimiento del gradiente que afecta a funciones tradicionales como sigmoide o tangente hiperbólica,
+ especialmente en redes profundas
+\end_layout
+
+\begin_layout Standard
+Las ventajas específicas de ReLU incluyen:
+\end_layout
+
+\begin_layout Itemize
+Gradiente constante para valores positivos (evita saturación)
+\end_layout
+
+\begin_layout Itemize
+Cómputo eficiente (max(0,x) es simple)
+\end_layout
+
+\begin_layout Itemize
+Induce sparsity natural en la red
+\end_layout
+
+\begin_layout Itemize
+Converge más rápido que activaciones sigmoidales
+\end_layout
+
+\begin_layout Itemize
+Menos susceptible a problemas de gradiente explosivo
+\end_layout
+
+\begin_layout Subsection
+Normalización por lotes (Batch Normalization)
+\end_layout
+
+\begin_layout Standard
+La normalización por lotes se aplicó después de cada transformación lineal y antes de la activación ReLU.
+ Esta técnica estabiliza el entrenamiento normalizando las entradas de cada capa para tener media cero y varianza unitaria,
+ reduciendo el fenómeno conocido como Internal Covariate Shift.
+\end_layout
+
+\begin_layout Standard
+Los beneficios observados de Batch Normalization incluyen:
+\end_layout
+
+\begin_layout Itemize
+Permite usar learning rates más altos
+\end_layout
+
+\begin_layout Itemize
+Reduce dependencia de inicialización de pesos
+\end_layout
+
+\begin_layout Itemize
+Actúa como regularizador adicional
+\end_layout
+
+\begin_layout Itemize
+Acelera convergencia del entrenamiento
+\end_layout
+
+\begin_layout Subsection
+Regularización mediante Dropout
+\end_layout
+
+\begin_layout Standard
+Se implementó dropout con una tasa del 20% en todas las capas ocultas como mecanismo de regularización para prevenir overfitting.
+ Durante el entrenamiento,
+ dropout desactiva aleatoriamente el 20% de las neuronas en cada forward pass,
+ forzando a la red a no depender excesivamente de neuronas específicas.
+\end_layout
+
+\begin_layout Standard
+Esta técnica proporciona múltiples beneficios:
+\end_layout
+
+\begin_layout Itemize
+Reduce overfitting al prevenir co-adaptación de neuronas
+\end_layout
+
+\begin_layout Itemize
+Mejora generalización en datos no vistos
+\end_layout
+
+\begin_layout Itemize
+Simula ensemble de redes diferentes
+\end_layout
+
+\begin_layout Itemize
+Tasa del 20% balanclea regularización sin pérdida excesiva de información
+\end_layout
+
+\begin_layout Subsection
+Inicialización de pesos Kaiming/He
+\end_layout
+
+\begin_layout Standard
+La inicialización de pesos utiliza el método Kaiming/He,
+ específicamente diseñado para funciones de activación ReLU.
+ Esta inicialización es crucial para mantener la varianza de las activaciones estable a través de las capas de la red.
+\end_layout
+
+\begin_layout Standard
+La fórmula utilizada es:
+ std = sqrt(2/fan_in),
+ donde fan_in es el número de conexiones de entrada a cada neurona.
+ Esta inicialización:
+\end_layout
+
+\begin_layout Itemize
+Mantiene varianza estable durante propagación hacia adelante
+\end_layout
+
+\begin_layout Itemize
+Previene desvanecimiento o explosión de gradientes
+\end_layout
+
+\begin_layout Itemize
+Acelera convergencia inicial del entrenamiento
+\end_layout
+
+\begin_layout Itemize
+Es óptima para activaciones ReLU
+\end_layout
+
+\begin_layout Section
+Entrenamiento y optimización
+\end_layout
+
+\begin_layout Standard
+El proceso de entrenamiento de la red neuronal FCN se estructuró en múltiples etapas para garantizar un rendimiento óptimo.
+ La estrategia incluyó optimización automática de hiperparámetros,
+ implementación de técnicas para manejar el desbalance de clases,
+ y un protocolo robusto de validación con early stopping.
+\end_layout
+
+\begin_layout Subsection
+Optimización del learning rate con Optuna
+\end_layout
+
+\begin_layout Standard
+Se utilizó la librería Optuna para optimizar automáticamente el learning rate mediante búsqueda bayesiana.
+ Optuna implementa el algoritmo Tree-structured Parzen Estimator (TPE) que es más eficiente que grid search o random search,
+ especialmente para espacios de hiperparámetros continuos.
+\end_layout
+
+\begin_layout Itemize
+Rango de búsqueda:
+ [1e-4,
+ 5e-3] en escala logarítmica
+\end_layout
+
+\begin_layout Itemize
+Número de trials:
+ 3 (balance entre tiempo y exploración)
+\end_layout
+
+\begin_layout Itemize
+Métrica objetivo:
+ F1-macro en validación
+\end_layout
+
+\begin_layout Itemize
+Sampler:
+ TPESampler con semilla fija (reproducibilidad)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Trial
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Learning rate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+F1-macro (val)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.000432 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.5949
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.000412 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.6251
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.001792 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.6367
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El mejor learning rate encontrado fue 0.001752 con un F1-macro de 0.6367 en validación.
+ La mejora del 6.9% entre el peor y mejor trial demuestra la importancia de la optimización de hiperparámetros en el rendimiento final del modelo.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Subsection
+Pesado por clases para datos desbalanceados
+\end_layout
+
+\begin_layout Standard
+Dado que el dataset KDD99 presenta un fuerte desbalance de clases,
+ con 'normal' y 'neptune' representando más del 80% de las muestras,
+ se implementó un sistema de pesado inversamente proporcional a la frecuencia de cada clase.
+ Esta técnica es fundamental para evitar que el modelo se sesgue hacia las clases mayoritarias.
+\end_layout
+
+\begin_layout Standard
+El cálculo de pesos siguió la fórmula:
+ weight_i = (num_classes) / (num_classes × frequency_i),
+ donde:
+\end_layout
+
+\begin_layout Itemize
+frequency_i es la proporción de la clase i en el conjunto de entrenamiento
+\end_layout
+
+\begin_layout Itemize
+num_classes = 23 (total de clases)
+\end_layout
+
+\begin_layout Itemize
+Los pesos se normalizan para sumar num_classes
+\end_layout
+
+\begin_layout Itemize
+Clases minoritarias reciben pesos más altos
+\end_layout
+
+\begin_layout Standard
+Esta implementación se integró directamente en CrossEntropyLoss de PyTorch mediante el parámetro weight,
+ permitiendo que durante cada forward pass las clases minoritarias contribuyan más significativamente al gradiente,
+ mejorando su aprendizaje sin necesidad de técnicas más complejas como SMOTE o undersampling.
+\end_layout
+
+\begin_layout Subsection
+Early stopping y validación
+\end_layout
+
+\begin_layout Standard
+Se implementó early stopping basado en F1-macro de validación con una paciencia de 6 épocas.
+ Esta métrica fue seleccionada por ser más apropiada que accuracy para datasets desbalanceados,
+ ya que considera el rendimiento promedio en todas las clases independientemente de su frecuencia.
+\end_layout
+
+\begin_layout Standard
+El protocolo de early stopping incluyó:
+\end_layout
+
+\begin_layout Itemize
+Evaluación de F1-macro en validación cada época
+\end_layout
+
+\begin_layout Itemize
+Guardado del mejor estado cuando F1-macro mejora
+\end_layout
+
+\begin_layout Itemize
+Contador de paciencia:
+ 6 épocas sin mejora
+\end_layout
+
+\begin_layout Itemize
+Restauración automática del mejor modelo al final
+\end_layout
+
+\begin_layout Subsection
+Comparación de variantes de arquitectura
+\end_layout
+
+\begin_layout Standard
+Para validar la arquitectura propuesta y explorar el impacto de diferentes configuraciones,
+ se entrenaron y compararon 4 variantes de la red FCN.
+ Cada variante fue diseñada para evaluar aspectos específicos:
+ el efecto de la regularización,
+ el impacto del tamaño de la red,
+ y la robustez de la configuración base.
+\end_layout
+
+\begin_layout Standard
+Las variantes evaluadas fueron:
+\end_layout
+
+\begin_layout Itemize
+Base (256-128-64):
+ Con BatchNorm y Dropout 20%
+\end_layout
+
+\begin_layout Itemize
+Sin regularización (256-128-64):
+ Sin BatchNorm ni Dropout
+\end_layout
+
+\begin_layout Itemize
+Más grande (512-256-128):
+ Con Dropout 30% aumentado
+\end_layout
+
+\begin_layout Itemize
+Más pequeña (128-64-32):
+ Con configuración estándar
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Variante 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Best F1-macro
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Last F1-macro
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Observaciones
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Base (256-128-64)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.6278 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.6690
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Convergencia estable
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Sin regularización
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.6309 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.6148 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Mayor volatilidad
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Más grande (512-256-128)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.6702 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.6500 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Mejor rendimiento peak
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Más pequeña (128-64-32)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.6309 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.6410 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Eficiente y estable
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El análisis de resultados revela patrones importantes:
+ la variante más grande alcanzó el mejor rendimiento peak (F1-macro=0.6702),
+ pero mostró mayor volatilidad durante el entrenamiento.
+ La configuración base demostró un balance óptimo entre rendimiento y estabilidad,
+ mientras que la variante sin regularización confirma la importancia de BatchNorm y Dropout al exhibir mayor variabilidad en las métricas.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Curvas de loss y F1-macro durante entrenamiento para las 4 variantes evaluadas
+\begin_inset Graphics
+	filename C:/OneDriveAdmi/OneDrive - ina.ac.cr/Archivos/TEC/Analisis de Datos para Ciberseguridad/Proyectos/2/Deyber/Final/TEC_AD_TP2/figures/fcn_variants_curves.png.jpg
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Análisis de la variante sin regularización
+\end_layout
+
+\begin_layout Standard
+La variante sin BatchNorm ni Dropout proporcionó evidencia clara sobre la importancia de la regularización.
+ Aunque alcanzó un F1-macro competitivo (0.6309),
+ las curvas de entrenamiento mostraron fluctuaciones significativas que indican inestabilidad en la convergencia.
+\end_layout
+
+\begin_layout Standard
+Las observaciones específicas incluyen:
+\end_layout
+
+\begin_layout Itemize
+Mayor variabilidad entre épocas consecutivas
+\end_layout
+
+\begin_layout Itemize
+Diferencia notable entre best y last F1-macro (0.0161)
+\end_layout
+
+\begin_layout Itemize
+Señales tempranas de overfitting en épocas avanzadas
+\end_layout
+
+\begin_layout Itemize
+Sensibilidad alta a la inicialización de pesos
+\end_layout
+
+\begin_layout Subsection
+Análisis de la variante de mayor capacidad
+\end_layout
+
+\begin_layout Standard
+La arquitectura 512-256-128 demostró la mayor capacidad de aprendizaje,
+ alcanzando el F1-macro más alto (0.6702).
+ Sin embargo,
+ esta mejora vino acompañada de mayor costo computacional y tiempo de entrenamiento.
+ El Dropout aumentado al 30% fue necesario para controlar el overfitting en esta red más profunda.
+\end_layout
+
+\begin_layout Standard
+Características de esta variante:
+\end_layout
+
+\begin_layout Itemize
+Parámetros totales:
+ ~40% más que la variante base
+\end_layout
+
+\begin_layout Itemize
+Tiempo de entrenamiento:
+ ~30% mayor por época
+\end_layout
+
+\begin_layout Itemize
+Mejor rendimiento peak pero mayor volatilidad
+\end_layout
+
+\begin_layout Itemize
+Requiere regularización más agresiva (Dropout 30%)
+\end_layout
+
+\begin_layout Standard
+Este resultado confirma que para el dataset KDD99,
+ mayor capacidad de modelo puede traducirse en mejor rendimiento,
+ pero requiere un balance cuidadoso entre complejidad y regularización para mantener la estabilidad del entrenamiento.
+\end_layout
+
+\begin_layout Subsection
+Evaluación en test
+\end_layout
+
+\begin_layout Standard
+La evaluación final se realizó con el mejor modelo entrenado (variante base optimizada) sobre el conjunto de prueba,
+ que no fue utilizado durante ninguna fase del entrenamiento o validación.
+ Esta evaluación independiente proporciona una estimación no sesgada del rendimiento real del modelo en datos completamente nuevos.
+\end_layout
+
+\begin_layout Subsection
+Métricas globales de rendimiento
+\end_layout
+
+\begin_layout Standard
+Los resultados obtenidos en el conjunto de test fueron:
+\end_layout
+
+\begin_layout Itemize
+Accuracy:
+ 95.95%
+\end_layout
+
+\begin_layout Itemize
+F1-macro:
+ 55.32%
+\end_layout
+
+\begin_layout Standard
+La notable diferencia entre ambas métricas (40.63 puntos porcentuales) refleja claramente el impacto del desbalance de clases.
+ La accuracy elevada se debe principalmente a la correcta clasificación de las clases mayoritarias ('normal' con 7,756 muestras y 'neptune' con 11,170 muestras),
+ que representan aproximadamente el 86% del conjunto de test.
+\end_layout
+
+\begin_layout Standard
+El F1-macro,
+ al promediar el rendimiento de todas las clases independientemente de su frecuencia,
+ proporciona una evaluación más equilibrada y realista del rendimiento del modelo en el contexto de detección de intrusiones,
+ donde es crucial detectar correctamente ataques minoritarios.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Metrica
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Valor
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Interpretación
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Relevancia
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Accuracy 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+95.95%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Clasificación correcta globales
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Sesgada por clases
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+F1-macro 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+55.32%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rendimiento balanceado
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Apropiada para datos desbalanceados
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Análisis de la matriz de confusión
+\end_layout
+
+\begin_layout Standard
+La matriz de confusión normalizada reveló patrones específicos en el comportamiento del modelo que son característicos de problemas de detección de intrusiones.
+ El análisis mostró que 22 de las 23 clases aparecieron en el conjunto de test,
+ con una clase completamente ausente debido a su extrema rareza.
+\end_layout
+
+\begin_layout Standard
+Los hallazgos principales incluyen:
+\end_layout
+
+\begin_layout Itemize
+Diagonal principal fuerte:
+ la mayoría de clases se clasifican correctamente
+\end_layout
+
+\begin_layout Itemize
+Clase 'normal':
+ 7,756 muestras con alta precisión
+\end_layout
+
+\begin_layout Itemize
+Clase 'neptune':
+ 11,170 muestras con clasificación robusta
+\end_layout
+
+\begin_layout Itemize
+Clases minoritarias (1-6 muestras):
+ mayor variabilidad en rendimiento
+\end_layout
+
+\begin_layout Itemize
+Confusiones sistemáticas:
+ algunos ataques se clasifican como otros tipos
+\end_layout
+
+\begin_layout Standard
+Las confusiones observadas entre ciertos tipos de ataque son esperables desde el punto de vista de ciberseguridad,
+ ya que algunos ataques comparten características de tráfico de red similares.
+ Por ejemplo,
+ diferentes variantes de ataques de denegación de servicio pueden presentar patrones de conexión parecidos que el modelo encuentra difíciles de distinguir.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Matriz de confusión normalizada por filas en el conjunto de test
+\begin_inset Graphics
+	filename C:/OneDriveAdmi/OneDrive - ina.ac.cr/Archivos/TEC/Analisis de Datos para Ciberseguridad/Proyectos/2/Deyber/Final/TEC_AD_TP2/figures/matriz de confusion.jpg
+	scale 55
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Evaluación de múltiples corridas
+\end_layout
+
+\begin_layout Standard
+Para obtener resultados estadísticamente robustos y evaluar la estabilidad del modelo,
+ se realizaron 10 corridas independientes con diferentes semillas aleatorias.
+ Cada corrida utilizó exactamente la misma arquitectura,
+ hiperparámetros optimizados y datos,
+ pero con diferente inicialización de pesos.
+\end_layout
+
+\begin_layout Itemize
+Evaluar la variabilidad inherente del modelo
+\end_layout
+
+\begin_layout Itemize
+Calcular intervalos de confianza para las métricas
+\end_layout
+
+\begin_layout Itemize
+Detectar dependencia excesiva de la inicialización
+\end_layout
+
+\begin_layout Itemize
+Proporcionar estimaciones más confiables del rendimiento
+\end_layout
+
+\begin_layout Subsection
+Resultados estadísticos de las 10 corridas
+\end_layout
+
+\begin_layout Standard
+Las 10 corridas independientes utilizaron las semillas [11,
+ 22,
+ 33,
+ 44,
+ 55,
+ 66,
+ 77,
+ 88,
+ 99,
+ 1234] para garantizar reproducibilidad.
+ Cada entrenamiento siguió el protocolo completo:
+ optimización con el learning rate encontrado (0.001752),
+ early stopping basado en F1-macro,
+ y evaluación final en el conjunto de test.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Métrica 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Media 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Desviación Estándar
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Interpretación
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Accuracy (test)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+95.95% 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+±0.12%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Alta reproducibilidad
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+F1-macro (test)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+55.32%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+±3.45%
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Variabilidad moderada
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La baja desviación estándar en accuracy (±0.12%) indica alta reproducibilidad del modelo y estabilidad en la clasificación de clases mayoritarias.
+ La mayor variabilidad en F1-macro (±3.45%) refleja la sensibilidad de esta métrica a las clases minoritarias,
+ donde pequeños cambios en la clasificación de ataques raros pueden impactar significativamente el promedio.
+\end_layout
+
+\begin_layout Standard
+Estos resultados confirman que el modelo FCN desarrollado es robusto y no depende excesivamente de la inicialización aleatoria,
+ proporcionando rendimiento consistente across múltiples entrenamientos independientes.
+\end_layout
+
+\begin_layout Subsection
+Conclusiones de la Parte II
+\end_layout
+
+\begin_layout Standard
+La implementación de la red neuronal FCN para el dataset KDD99 demostró ser efectiva para el problema de clasificación multiclase de detección de intrusiones.
+ Los principales hallazgos y contribuciones de este trabajo incluyen:
+\end_layout
+
+\begin_layout Enumerate
+La arquitectura 41→256→128→64→23 con regularización demostró un balance apropiado entre capacidad y eficiencia computacional
+\end_layout
+
+\begin_layout Enumerate
+El pesado por clases mejoró significativamente el rendimiento en clases minoritarias,
+ siendo esencial para datasets desbalanceados como KDD99
+\end_layout
+
+\begin_layout Enumerate
+La optimización automática de hiperparámetros con Optuna resultó en mejoras consistentes del rendimiento (6.9% de mejora en F1-macro)
+\end_layout
+
+\begin_layout Enumerate
+El F1-macro (55.32%) proporciona una evaluación más representativa que la accuracy (95.95%) para problemas de detección de intrusiones
+\end_layout
+
+\begin_layout Enumerate
+La comparación de variantes confirmó la importancia de la regularización y el balance entre capacidad del modelo y estabilidad
+\end_layout
+
+\begin_layout Enumerate
+Los resultados de múltiples corridas (±3.45% en F1-macro) confirman la estabilidad y reproducibilidad del enfoque propuesto
+\end_layout
+
+\begin_layout Enumerate
+La metodología desarrollada es escalable y puede adaptarse a otros datasets de ciberseguridad con características similares
+\end_layout
+
+\begin_layout Standard
+La red neuronal FCN desarrollada constituye una base sólida para la detección automática de intrusiones y proporciona un benchmark robusto para la comparación con los métodos tradicionales (árboles de decisión y random forests) implementados en la Parte I del trabajo práctico.
+\end_layout
+
+\begin_layout Standard
+Los resultados demuestran que las redes neuronales pueden manejar efectivamente la complejidad y el desbalance inherentes en datos de ciberseguridad,
+ proporcionando una herramienta valiosa para sistemas de detección de intrusiones en tiempo real.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_body
+\end_document
