@@ -4,7 +4,7 @@
 \begin_header
 \save_transient_properties true
 \origin unavailable
-\textclass article
+\textclass report
 \begin_preamble
 \usepackage{placeins}   % para \FloatBarrier
 \usepackage{caption}    % para \captionof en tablas no flotantes
@@ -107,15 +107,15 @@
 
 \begin_body
 
-\begin_layout Section*
-Parte II
+\begin_layout Part
+Redes Neuronales FCN
+\end_layout
+
+\begin_layout Chapter
+Implementación 
 \end_layout
 
 \begin_layout Section
-Implementación de Redes Neuronales FCN
-\end_layout
-
-\begin_layout Subsection
 Verificación con DataLoader
 \end_layout
 
@@ -170,7 +170,7 @@ Esto confirma que los datos quedaron correctamente preparados para el flujo de e
  tal como requiere CrossEntropyLoss de PyTorch.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Arquitectura FCN
 \end_layout
 
@@ -454,7 +454,7 @@ status open
 \begin_layout Plain Layout
 Diagrama esquemático de la red neuronal FCN (41→256→128→64→23)
 \begin_inset Graphics
-	filename C:/OneDriveAdmi/OneDrive - ina.ac.cr/Archivos/TEC/Analisis de Datos para Ciberseguridad/Proyectos/2/Deyber/Final/TEC_AD_TP2/figures/fcn_architecture_diagram.png
+	filename figures/fcn_architecture_diagram.png
 	scale 30
 
 \end_inset
@@ -1123,7 +1123,7 @@ status open
 \begin_layout Plain Layout
 Curvas de loss y F1-macro durante entrenamiento para las 4 variantes evaluadas
 \begin_inset Graphics
-	filename C:/OneDriveAdmi/OneDrive - ina.ac.cr/Archivos/TEC/Analisis de Datos para Ciberseguridad/Proyectos/2/Deyber/Final/TEC_AD_TP2/figures/fcn_variants_curves.png.jpg
+	filename figures/Variantes Best F1 macro Last F1 macro.jpg
 	scale 40
 
 \end_inset
@@ -1449,7 +1449,7 @@ status open
 \begin_layout Plain Layout
 Matriz de confusión normalizada por filas en el conjunto de test
 \begin_inset Graphics
-	filename C:/OneDriveAdmi/OneDrive - ina.ac.cr/Archivos/TEC/Analisis de Datos para Ciberseguridad/Proyectos/2/Deyber/Final/TEC_AD_TP2/figures/matriz de confusion.jpg
+	filename figures/fcn_test_confusion_matrix.png
 	scale 55
 
 \end_inset
@@ -1661,7 +1661,7 @@ Estos resultados confirman que el modelo FCN desarrollado es robusto y no depend
 \end_layout
 
 \begin_layout Subsection
-Conclusiones de la Parte II
+Conclusiones 
 \end_layout
 
 \begin_layout Standard

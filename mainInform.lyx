@@ -223,7 +223,7 @@ literal "false"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
-filename "Informe_Seccion_2/Parte II 2.0.lyx"
+filename "Informe_Seccion_2/Parte II 3.0.lyx"
 literal "false"
 
 \end_inset
@@ -235,6 +235,17 @@ literal "false"
 \begin_inset CommandInset include
 LatexCommand include
 filename "Informe_Seccion_3/seccion3.lyx"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "Informe_Seccion_4/seccion4.lyx"
 literal "false"
 
 \end_inset

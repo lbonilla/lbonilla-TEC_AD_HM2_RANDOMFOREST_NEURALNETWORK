@@ -1,0 +1,550 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass report
+\use_default_options true
+\maintain_unincluded_children no
+\language spanish
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008080
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content true
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Part
+Resumen de Arquitecturas
+\end_layout
+
+\begin_layout Chapter
+Resultados
+\end_layout
+
+\begin_layout Section
+Resumen de resultados y comparativa 
+\end_layout
+
+\begin_layout Section
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename /Users/luisbonilla/Developments/lbonilla-TEC_AD_HM2_RANDOMFOREST_NEURALNETWORK/Images/sec_4_comparative.png
+	width 100line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Resumen de Arquitecturas y Resultados 
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Resumen de Arquitecturas y Resultados"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Rendimiento Global:
+\end_layout
+
+\begin_layout Itemize
+Mejor F1-Score:
+ TabNet Config 1 sin pesos (0.855)
+\end_layout
+
+\begin_layout Itemize
+Más Estable:
+ Random Forest y Árbol de Decisión (std ~0.03)
+\end_layout
+
+\begin_layout Itemize
+Mejor Accuracy:
+ FCN (95.95%) - sesgada por clases mayoritarias
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Características Técnicas
+\end_layout
+
+\begin_layout Standard
+Los modelos evaluados presentan un trade-off entre simplicidad,
+ interpretabilidad y potencia predictiva.
+ Mientras que los árboles de decisión destacan por su rapidez y claridad interpretativa,
+ resultando útiles como modelos base,
+ los Random Forest ofrecen un mejor equilibrio entre robustez y eficiencia,
+ aunque con menor transparencia.
+ Por su parte,
+ las redes neuronales densas (FCN) incrementan la capacidad de capturar relaciones complejas,
+ pero requieren mayor ajuste de hiperparámetros y sacrifican interpretabilidad.
+ Finalmente,
+ TabNet representa la alternativa más avanzada y costosa en recursos,
+ integrando mecanismos de atención que permiten mejorar la explicabilidad sin renunciar a la potencia de un modelo profundo.
+ La elección del modelo,
+ por tanto,
+ dependerá del balance deseado entre precisión,
+ tiempo de entrenamiento,
+ consumo de memoria y necesidad de interpretabilidad.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename /Users/luisbonilla/Developments/lbonilla-TEC_AD_HM2_RANDOMFOREST_NEURALNETWORK/Images/sec_4_caract_tecnicas.png
+	width 100line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Características Técnicas 
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Características Técnicas "
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Manejo del Desbalance de Clases
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename /Users/luisbonilla/Developments/lbonilla-TEC_AD_HM2_RANDOMFOREST_NEURALNETWORK/Images/sec_4_desvalance.png
+	width 100line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Desbalance de Clases
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Desbalance de Clases"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Ventajas y Desventajas
+\end_layout
+
+\begin_layout Description
+Árbol de Decisión
+\end_layout
+
+\begin_layout Itemize
+Ventajas:
+ Máxima interpretabilidad,
+ rápido,
+ bajo costo computacional
+\end_layout
+
+\begin_layout Itemize
+Desventajas:
+ Menor capacidad para patrones complejos,
+ propenso a overfitting
+\end_layout
+
+\begin_layout Description
+Random Forest
+\end_layout
+
+\begin_layout Itemize
+Ventajas:
+ Robustez,
+ paralelizable,
+ reduce overfitting
+\end_layout
+
+\begin_layout Itemize
+Desventajas:
+ Mejora marginal (+0.38%),
+ mayor costo computacional (7x)
+\end_layout
+
+\begin_layout Description
+FCN (Red Neuronal)
+\end_layout
+
+\begin_layout Itemize
+Ventajas:
+ Alta accuracy global,
+ maneja no-linealidades
+\end_layout
+
+\begin_layout Itemize
+Desventajas:
+ F1-macro bajo por desbalance,
+ menos interpretable
+\end_layout
+
+\begin_layout Description
+TabNet
+\end_layout
+
+\begin_layout Itemize
+Ventajas:
+ Mejor F1-score,
+ interpretabilidad nativa,
+ selección automática características
+\end_layout
+
+\begin_layout Itemize
+Desventajas:
+ Mayor complejidad,
+ tiempo entrenamiento alto,
+ más memoria
+\end_layout
+
+\begin_layout Itemize
+Para Producción:
+ Random Forest ofrece el mejor balance rendimiento/costo
+\end_layout
+
+\begin_layout Itemize
+Para Investigación:
+ TabNet proporciona el mejor rendimiento absoluto
+\end_layout
+
+\begin_layout Itemize
+Para Interpretabilidad:
+ Árbol de Decisión mantiene transparencia total
+\end_layout
+
+\begin_layout Itemize
+Para Clases Minoritarias:
+ TabNet con pesos es superior en reducir falsos negativos
+\end_layout
+
+\begin_layout Standard
+TabNet Config 1 con pesos de clase emerge como el modelo más robusto para detección de intrusiones,
+ balanceando efectivamente el F1-score general (0.836) con una reducción significativa de falsos negativos (28%),
+ crucial en aplicaciones de ciberseguridad.
+\end_layout
+
+\begin_layout Section
+Conclusiones
+\end_layout
+
+\begin_layout Standard
+En conclusión,
+ los resultados obtenidos evidencian que no existe un modelo único que domine en todos los criterios evaluados,
+ sino que cada arquitectura ofrece ventajas diferenciales según el objetivo analítico.
+ Los modelos basados en árboles se consolidan como alternativas eficientes y estables,
+ con alta interpretabilidad en el caso del árbol de decisión y un balance favorable entre robustez y costo computacional en el caso del Random Forest,
+ lo que los convierte en candidatos idóneos para entornos de producción.
+ Por otra parte,
+ las redes neuronales densas (FCN),
+ si bien alcanzan la mayor exactitud global,
+ muestran limitaciones frente al desbalance de clases y reducen la capacidad explicativa del modelo.
+ En contraste,
+ TabNet se posiciona como la arquitectura más avanzada,
+ alcanzando el mejor desempeño absoluto en términos de F1-score y ofreciendo mecanismos nativos de interpretabilidad,
+ aunque con un costo elevado en tiempo y recursos.
+ En contextos sensibles como la detección de intrusiones,
+ donde la reducción de falsos negativos resulta prioritaria,
+ TabNet con ponderación de clases se presenta como la alternativa más robusta,
+ mientras que en aplicaciones donde se privilegia la eficiencia y la transparencia,
+ Random Forest y los árboles de decisión continúan siendo opciones estratégicamente ventajosas.
+\end_layout
+
+\end_body
+\end_document

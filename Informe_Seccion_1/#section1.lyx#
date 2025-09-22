@@ -1,0 +1,1948 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass report
+\use_default_options true
+\maintain_unincluded_children no
+\language spanish
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008080
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content true
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Part
+Árboles de Decisión y Random forest
+\end_layout
+
+\begin_layout Chapter
+Árbol de Decisión
+\end_layout
+
+\begin_layout Section
+Optimización 
+\end_layout
+
+\begin_layout Subsection
+Espacio de Búsqueda y Justificación
+\end_layout
+
+\begin_layout Standard
+La optimización mediante Optuna exploró 50 configuraciones con los siguientes rangos:
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+max_depth ∈ [3,
+ 30]
+\end_layout
+
+\begin_layout Itemize
+Justificación del mínimo (3):
+ Permite capturas patrones básicos con al menos 2^3 = 8 hojas potenciales
+\end_layout
+
+\begin_layout Itemize
+Justificación del máximo (30):
+ Previene memorización excesiva;
+ con 145,553 muestras,
+ una profundidad de 30 permitiría hojas con ~4.4 muestras promedio
+\end_layout
+
+\begin_layout Standard
+Valor óptimo encontrado:
+ 28 - Indica que el dataset contiene patrones muy específicos que requieren alta granularidad
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+min_samples_split ∈ [2,
+ 100]
+\end_layout
+
+\begin_layout Itemize
+Justificación del rango:
+ Con ~102k muestras de entrenamiento,
+ requerir 100 muestras (0.1%) para división asegura significancia estadística
+\end_layout
+
+\begin_layout Itemize
+Valor óptimo:
+ 7 - Balance entre flexibilidad y prevención de overfitting
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+min_samples_leaf ∈ [1,
+ 50]
+\end_layout
+
+\begin_layout Itemize
+Justificación:
+ Hojas con <50 muestras representan menos del 0.05% del dataset,
+ potencialmente capturando ruido
+\end_layout
+
+\begin_layout Itemize
+Valor óptimo:
+ 3 - Permite alta especificidad manteniendo mínima robustez estadística
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+criterion ∈ {gini,
+ entropy}
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Gini:
+ 
+\series default
+Computacionalmente eficiente,
+ favorece divisiones puras
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Entropy:
+
+\series default
+ Teóricamente óptima para información,
+ mejor para multiclase
+\end_layout
+
+\begin_layout Itemize
+Selección:
+ entropy - Superior para el problema de 17 clases
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+max_features ∈ {sqrt,
+ log2,
+ None}
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+sqrt(41) ≈ 6:
+
+\series default
+ Reduce correlación,
+ acelera entrenamiento
+\end_layout
+
+\begin_layout Itemize
+log2(41) ≈ 5:
+ Más restrictivo,
+ mayor diversidad
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+None:
+
+\series default
+ Considera todas las características
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Selección:
+ None
+\series default
+ - El modelo se beneficia de toda la información disponible
+\end_layout
+
+\begin_layout Subsection
+Configuraciones Óptimas
+\end_layout
+
+\begin_layout Standard
+La siguiente tabla presenta las tres arquitecturas más destacadas obtenidas tras el proceso de optimización.
+ Estas configuraciones representan los mejores resultados en términos de desempeño del modelo,
+ permitiendo comparar las combinaciones de hiperparámetros más efectivas y evaluar su impacto relativo en la precisión y robustez del sistema.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+alignment center
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="7">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Config
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+max_depth
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+min_samples_split
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+min_samples_leaf
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+criterion
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+F1-score
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Desv.
+ Est.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+28
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+7
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+entropy
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.8689
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0315
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+22
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+entropy
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.8666
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0227
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+24
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+entropy
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.8666
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0227
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Mejores arquitecturas árbol de decisión
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Gráficos del proceso de Optimización
+\end_layout
+
+\begin_layout Standard
+La visualización de la historia de optimización permite analizar la evolución del rendimiento a lo largo de los ensayos.
+ El gráfico evidencia una convergencia rápida en las primeras iteraciones,
+ seguida por una meseta con mejoras marginales,
+ y finalmente un avance significativo en el trial 49,
+ que alcanzó el mejor valor de F1-score registrado.
+\end_layout
+
+\begin_layout Standard
+El gráfico 
+\begin_inset CommandInset ref
+LatexCommand labelonly
+reference "fig:Optimización Árbol de Decisión"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+ muestra tres características clave:
+\end_layout
+
+\begin_layout Itemize
+Rápida convergencia inicial:
+ 80% del rendimiento en primeros 10 trials
+\end_layout
+
+\begin_layout Itemize
+Meseta temprana:
+ Trials 15-35 con mejoras < 1%
+\end_layout
+
+\begin_layout Itemize
+Breakthrough final:
+ Trial 49 encuentra configuración marginalmente superior
+\end_layout
+
+\begin_layout Subsubsection*
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename /Users/luisbonilla/Developments/lbonilla-TEC_AD_HM2_RANDOMFOREST_NEURALNETWORK/Images/sec_01_optimizationDesitionTrees.png
+	width 100line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Optimización Árbol de decisión
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Optimización Árbol de Decisión"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Gráfico de Importancia de Parámetros
+\end_layout
+
+\begin_layout Standard
+El análisis revela jerarquía clara:
+\end_layout
+
+\begin_layout Standard
+El gráfico 
+\begin_inset CommandInset ref
+LatexCommand labelonly
+reference "fig:Importancia de parámetros"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+ evidencia una fuerte dependencia del modelo respecto a la profundidad del árbol (max_depth),
+ que domina claramente el desempeño.
+ Aunque min_samples_leaf y criterion contribuyen de manera significativa,
+ los parámetros de regularización como max_features y min_samples_split muestran un impacto limitado,
+ sugiriendo que los esfuerzos de ajuste deberían priorizar los factores que controlan la complejidad y pureza de los nodos.
+ Esto también indica que la optimización de los parámetros menos influyentes podría tener rendimientos marginales y costos computacionales innecesarios.
+\end_layout
+
+\begin_layout Subsubsection*
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Importanaci de parámetros-1"
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename /Users/luisbonilla/Developments/lbonilla-TEC_AD_HM2_RANDOMFOREST_NEURALNETWORK/Images/sec_01_importanciaHiperparametrosArbol.png
+	width 100line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Importancia de parámetros
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Importancia de parámetros"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Random Forest
+\end_layout
+
+\begin_layout Section
+Optimización
+\end_layout
+
+\begin_layout Standard
+La búsqueda exploró n_estimators ∈ [10,
+ 300] con paso de 10:
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Justificación del mínimo (10):
+
+\series default
+ Número mínimo para beneficios del ensemble según Breiman (2001)
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Justificación del máximo (300):
+
+\series default
+ Estudios empíricos muestran rendimientos marginales decrecientes después de 100-200 árboles
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Valor óptimo:
+ 60
+\series default
+ - Sorprendentemente bajo,
+ sugiere que el dataset tiene patrones claros que no requieren extensive averaging
+\end_layout
+
+\begin_layout Subsection
+Parámetros Fijos Justificados
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+max_depth=20:
+
+\series default
+ Menos profundo que el árbol individual (28) para promover diversidad
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+min_samples_split=5:
+
+\series default
+ Más conservador que el árbol individual para reducir varianza
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+min_samples_leaf=2:
+
+\series default
+ Previene hojas singleton,
+ mejora generalización
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+max_features='sqrt':
+
+\series default
+ Estándar para clasificación,
+ decorrelaciona árboles
+\end_layout
+
+\begin_layout Subsection
+Configuraciones Óptimas
+\end_layout
+
+\begin_layout Standard
+La siguiente tabla presenta las tres arquitecturas más destacadas obtenidas tras el proceso de optimización.
+ Estas configuraciones corresponden a los mejores resultados en términos de desempeño del modelo,
+ lo que permite comparar las combinaciones de hiperparámetros más efectivas y evaluar su impacto relativo en la precisión y la robustez del sistema.
+ Cabe señalar que algunos valores pueden variar ligeramente debido a las diferencias entre ejecuciones del modelo.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+alignment center
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="7">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Config
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+n_estimators
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Fl-score (media)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+F1-score (std)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+FP Rate (media)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+FP Rate (std)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Runs exitosos
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+50
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.8689
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0315
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.000122
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.000028
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+10
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+50
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.8689
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0315
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.000122
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.000028
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+10
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Mejores arquitecturas Random Forest
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Gráficos del proceso de Optimización
+\end_layout
+
+\begin_layout Standard
+El gráfico de optimización de Random Forest revela un comportamiento inesperado pero consistente en el dataset KDD99.
+ A diferencia del esperado donde más árboles deberían mejorar o mantener el rendimiento,
+ encontramos tres zonas de rendimiento claramente diferenciadas:
+\end_layout
+
+\begin_layout Standard
+El gráfico 
+\begin_inset CommandInset ref
+LatexCommand labelonly
+reference "fig:Optimización random forests"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+ muestra tres características clave:
+\end_layout
+
+\begin_layout Itemize
+Zona Óptima (F1-score ≈ 0.841):
+ Alcanzada con 60 árboles
+\end_layout
+
+\begin_layout Itemize
+Zona de Degradación (F1-score ≈ 0.828):
+ Observada con 70-300 árboles
+\end_layout
+
+\begin_layout Itemize
+Puntos Anómalos (F1-score ≈ 0.814):
+ Aparecen con configuraciones específicas
+\end_layout
+
+\begin_layout Subsubsection*
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename /Users/luisbonilla/Developments/lbonilla-TEC_AD_HM2_RANDOMFOREST_NEURALNETWORK/Images/sec_1_optimizacion_RandomForest.png
+	width 100line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Optimización random forests 
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Optimización random forests"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El resultado más significativo es que 60 árboles proporcionan mejor rendimiento que 300 árboles,
+ con una degradación del 1.3% en F1-score cuando se utilizan más de 100 árboles.
+ Esta configuración ofrece el mejor balance entre precisión y eficiencia computacional.
+\end_layout
+
+\begin_layout Subsubsection*
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename /Users/luisbonilla/Developments/lbonilla-TEC_AD_HM2_RANDOMFOREST_NEURALNETWORK/Images/sec1_F1ScoreVrsNumArboles.png
+	width 100line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+F1-score vrs Número de Árboles
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Optimización random forests-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Resultados Experimentales
+\end_layout
+
+\begin_layout Section
+Rendimiento Comparativo
+\end_layout
+
+\begin_layout Standard
+El Árbol de Decisión alcanzó un F1-score promedio de 0.8689,
+ con una desviación estándar de 0.0315,
+ lo que refleja un desempeño sólido y estable en las distintas particiones de los datos.
+ Su tasa de falsos positivos (FP Rate) fue prácticamente nula (0.0001 en promedio,
+ con desviación estándar cero),
+ lo que indica que el modelo rara vez clasifica erróneamente ejemplos negativos como positivos.
+ Este comportamiento lo convierte en un modelo atractivo por su simplicidad e interpretabilidad,
+ además de mantener un costo computacional bajo tanto en entrenamiento como en predicción.
+\end_layout
+
+\begin_layout Standard
+El Random Forest,
+ configurado con 60 árboles,
+ obtuvo un F1-score promedio de 0.8722,
+ ligeramente superior al Árbol de Decisión,
+ aunque con una desviación estándar similar (0.0325).
+ La mejora,
+ aunque marginal,
+ sugiere que la combinación de múltiples árboles mediante bagging efectivamente incrementa la capacidad del modelo para generalizar y reduce el riesgo de sobreajuste asociado a un único árbol.
+ Al igual que en el Árbol de Decisión,
+ la tasa de falsos positivos fue prácticamente nula,
+ lo que indica que el ensamble no sacrifica precisión en aras de mayor cobertura.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="5">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Modelo
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+F1-score (media)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+F1-score (std)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+FP Rate (media)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+FP Rate (std)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Árbol de Decisión (mejor)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.8689
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0315
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0001
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0000
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Random Forest (60 árboles)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.8722
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0325
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0001
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0000
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Ambos modelos muestran un rendimiento muy competitivo,
+ con diferencias pequeñas pero consistentes a favor del Random Forest,
+ lo cual es coherente con la naturaleza del ensamble al ofrecer mayor robustez frente a la variabilidad de los datos.
+\end_layout
+
+\begin_layout Section
+Análisis de Resultados Comparativos
+\end_layout
+
+\begin_layout Standard
+Según la figura 
+\begin_inset CommandInset ref
+LatexCommand labelonly
+reference "fig:Compración F1-Score DT vrs RF"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+,
+ se pueden analizar los datos obtenidos al comparar el F1-score entre los tres mejores árboles de decisión y las dos mejores ejecuciones de las pruebas realizadas con Random Forests lo siguiente:
+\end_layout
+
+\begin_layout Subsubsection*
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename /Users/luisbonilla/Developments/lbonilla-TEC_AD_HM2_RANDOMFOREST_NEURALNETWORK/Images/sec1_F1Score_Comparation.png
+	width 100line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Compración F1-Score DT vrs RF
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Compración F1-Score DT vrs RF"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Mejora del Random Forest:
+
+\series default
+ +0.38% en F1-score
+\end_layout
+
+\begin_layout Standard
+Estadísticamente marginal pero consistente en las 10 particiones
+\end_layout
+
+\begin_layout Standard
+La mejora limitada sugiere que el árbol individual ya captura bien los patrones principales
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Estabilidad comparable:
+
+\series default
+ Desviaciones estándar similares (~0.03)
+\end_layout
+
+\begin_layout Standard
+Contraintuitivo:
+ RF típicamente muestra menor varianza
+\end_layout
+
+\begin_layout Standard
+Indica que ambos modelos son igualmente robustos para este dataset
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Tasa de Falsos Positivos:
+
+\series default
+ Excelente en ambos casos (0.01%) ver figura 
+\begin_inset CommandInset ref
+LatexCommand labelonly
+reference "fig:Compración Falsos Positivos"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Crítico para IDS donde falsas alarmas generan costos operacionales
+\end_layout
+
+\begin_layout Standard
+Ambos modelos son deployment-ready desde esta perspectiva
+\end_layout
+
+\begin_layout Subsubsection*
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename /Users/luisbonilla/Developments/lbonilla-TEC_AD_HM2_RANDOMFOREST_NEURALNETWORK/Images/sec1_FalsosPositivos.png
+	width 100line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Compración Falsos Positivos
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Compración Falsos Positivos"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Importancia de Características
+\end_layout
+
+\begin_layout Standard
+El análisis de importancia reveló que el modelo se basa principalmente en:
+\end_layout
+
+\begin_layout Standard
+Características de tráfico basadas en tiempo (count,
+ srv_count)
+\end_layout
+
+\begin_layout Standard
+Características de contenido (num_compromised,
+ num_root)
+\end_layout
+
+\begin_layout Standard
+Características básicas de conexión (protocol_type,
+ service)
+\end_layout
+
+\begin_layout Section
+Análisis de Eficiencia Computacional
+\end_layout
+
+\begin_layout Subsection
+Tiempos de Entrenamiento
+\end_layout
+
+\begin_layout Standard
+Árbol de Decisión:
+ ~0.5 segundos
+\end_layout
+
+\begin_layout Standard
+Random Forest (60 árboles):
+ ~3.5 segundos (7x más lento)
+\end_layout
+
+\begin_layout Subsection
+Trade-offs Identificados
+\end_layout
+
+\begin_layout Standard
+Mejora marginal vs.
+ costo computacional:
+ El RF ofrece solo 0.38% mejor F1-score por 7x más tiempo
+\end_layout
+
+\begin_layout Standard
+Interpretabilidad:
+ El árbol individual es directamente interpretable
+\end_layout
+
+\begin_layout Standard
+Paralelización:
+ RF puede aprovechar múltiples cores (n_jobs=-1)
+\end_layout
+
+\begin_layout Section
+Conclusiones
+\end_layout
+
+\begin_layout Standard
+Algunos hallazgos principales son:
+\end_layout
+
+\begin_layout Itemize
+Hiperparámetros óptimos reflejan la complejidad del problema:
+ El valor max_depth = 28 sugiere que el modelo necesita capturar patrones muy específicos y detallados.
+ Por su parte,
+ min_samples_leaf = 3 indica la importancia de mantener sensibilidad frente a casos raros o minoritarios,
+ mientras que criterion = 'entropy' se muestra superior al manejar clases múltiples desbalanceadas,
+ favoreciendo la pureza de los nodos en el aprendizaje.
+\end_layout
+
+\begin_layout Itemize
+Rendimiento de Random Forest:
+ La optimización mostró que solo se requieren 60 árboles para alcanzar un desempeño competitivo,
+ significativamente menor a los rangos típicos de 100–300 árboles.
+ La mejora marginal observada (0.38% en F1-score) sugiere que incrementar la complejidad del modelo podría no justificar los costos computacionales adicionales.
+\end_layout
+
+\begin_layout Itemize
+Preparación para producción:
+ Ambos modelos,
+ árboles de decisión individuales y Random Forest,
+ alcanzan F1-scores superiores al 86%,
+ tasas de falsos positivos por debajo de 0.02% y tiempos de inferencia aceptables,
+ demostrando que son adecuados para implementación práctica sin comprometer la eficiencia ni la precisión.
+\end_layout
+
+\end_body
+\end_document

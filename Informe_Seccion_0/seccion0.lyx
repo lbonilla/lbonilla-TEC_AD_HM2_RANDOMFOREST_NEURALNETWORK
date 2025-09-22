@@ -228,10 +228,174 @@ Optimización con Optuna
 \end_layout
 
 \begin_layout Standard
-Para el proceso de optimización se utilizó el framework Optuna,
- el cual proporciona un conjunto de funciones diseñadas para la búsqueda y ajuste automático de hiperparámetros.
- Este enfoque permite seleccionar de manera sistemática los parámetros más adecuados en función de los objetivos definidos,
- mejorando así la eficiencia y la precisión del modelo
+Para el proceso de optimización se empleó Optuna,
+ un framework flexible y eficiente que permite realizar la búsqueda automática de hiperparámetros mediante técnicas avanzadas como Tree-structured Parzen Estimator (TPE),
+ Grid Search adaptativa y Pruning dinámico.
+ Su principal ventaja radica en que abstrae gran parte de la complejidad de la optimización,
+ ofreciendo un conjunto de funciones que permiten estructurar,
+ ejecutar y analizar experimentos de manera sistemática.
+\end_layout
+
+\begin_layout Description
+Funciones principales de Optuna
+\end_layout
+
+\begin_layout Itemize
+Definición de espacios de búsqueda:
+\end_layout
+
+\begin_layout Standard
+A través de funciones como trial.suggest_int(),
+ trial.suggest_float(),
+ trial.suggest_categorical() o trial.suggest_loguniform(),
+ es posible especificar los rangos y distribuciones de los hiperparámetros.
+ Esto permite definir búsquedas discretas,
+ continuas o logarítmicas según el tipo de parámetro (por ejemplo,
+ número de capas,
+ tasa de aprendizaje,
+ profundidad máxima).
+\end_layout
+
+\begin_layout Itemize
+Gestión de estudios y pruebas:
+\end_layout
+
+\begin_layout Standard
+La función optuna.create_study() permite inicializar un estudio indicando el sampler (algoritmo de búsqueda) y el pruner (criterio de parada anticipada).
+ Cada iteración de optimización se maneja como un trial,
+ donde Optuna registra automáticamente los parámetros evaluados y el valor de la métrica objetivo.
+\end_layout
+
+\begin_layout Itemize
+Pruning dinámico:
+\end_layout
+
+\begin_layout Standard
+Con optuna.pruners.MedianPruner() u otros métodos como SuccessiveHalvingPruner,
+ se pueden detener de forma temprana aquellas configuraciones que muestran bajo rendimiento parcial,
+ ahorrando tiempo y recursos computacionales.
+ Esto resulta especialmente útil en modelos más costosos como FCN y TabNet.
+\end_layout
+
+\begin_layout Itemize
+Visualización y análisis:
+\end_layout
+
+\begin_layout Standard
+Optuna incluye funciones de análisis integradas,
+ como optuna.visualization.plot_optimization_history() o optuna.visualization.plot_param_importances(),
+ que permiten entender el comportamiento del proceso de optimización,
+ identificar la convergencia y analizar qué hiperparámetros tienen mayor impacto en el desempeño del modelo.
+\end_layout
+
+\begin_layout Standard
+En conjunto,
+ el uso de Optuna no solo permitió automatizar la selección de hiperparámetros,
+ sino también maximizar la eficiencia computacional y obtener modelos con un mejor equilibrio entre precisión,
+ generalización y estabilidad.
+\end_layout
+
+\begin_layout Section
+Implementación de función para la división de datos
+\end_layout
+
+\begin_layout Standard
+Se implementó la función split_dataset,
+ la cual divide los datos en tres subconjuntos:
+ entrenamiento (70 %),
+ validación (15 %) y prueba (15 %).
+ Esta separación garantiza una evaluación adecuada del modelo,
+ permitiendo entrenar,
+ ajustar hiperparámetros y validar su rendimiento final de manera independiente.
+\end_layout
+
+\begin_layout Subsubsection*
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename /Users/luisbonilla/Developments/lbonilla-TEC_AD_HM2_RANDOMFOREST_NEURALNETWORK/Images/sec_0_splitDataset.png
+	width 100line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Firma de la función split_dataset
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Función Split Dataset"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body

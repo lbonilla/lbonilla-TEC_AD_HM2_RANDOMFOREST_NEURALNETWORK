@@ -1,0 +1,395 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass report
+\use_default_options true
+\maintain_unincluded_children no
+\language spanish
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008080
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content true
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Part
+Contexto
+\end_layout
+
+\begin_layout Section
+Contexto del Problema
+\end_layout
+
+\begin_layout Standard
+El dataset KDD99 constituye uno de los benchmarks más utilizados en la investigación de sistemas de detección de intrusiones (IDS).
+ Contiene 494,021 conexiones de red etiquetadas como normales o como uno de 21 tipos diferentes de ataques,
+ agrupados en cuatro categorías principales:
+\end_layout
+
+\begin_layout Standard
+DoS (Denial of Service):
+ 54,572 instancias
+\end_layout
+
+\begin_layout Standard
+Probe:
+ 2,131 instancias
+\end_layout
+
+\begin_layout Standard
+R2L (Remote to Local):
+ 978 instancias
+\end_layout
+
+\begin_layout Standard
+U2R (User to Root):
+ 40 instancias
+\end_layout
+
+\begin_layout Standard
+Normal:
+ 87,832 instancias
+\end_layout
+
+\begin_layout Standard
+1.2 Objetivos
+\end_layout
+
+\begin_layout Standard
+Implementar y optimizar modelos de clasificación para detectar los 17 tipos de ataques presentes en el dataset filtrado
+\end_layout
+
+\begin_layout Standard
+Comparar el rendimiento entre Árboles de Decisión individuales y Random Forest
+\end_layout
+
+\begin_layout Standard
+Identificar los hiperparámetros óptimos mediante búsqueda sistemática
+\end_layout
+
+\begin_layout Standard
+Evaluar la robustez de los modelos mediante validación cruzada
+\end_layout
+
+\begin_layout Section
+Preprocesamiento de Datos
+\end_layout
+
+\begin_layout Subsection
+Limpieza y Filtrado
+\end_layout
+
+\begin_layout Standard
+El preprocesamiento inicial reveló importantes características del dataset:
+\end_layout
+
+\begin_layout Standard
+Registros duplicados eliminados:
+ 348,435 (70.5% del dataset original)
+\end_layout
+
+\begin_layout Standard
+Clases raras filtradas:
+ 6 clases con menos de 10 muestras (33 registros totales)
+\end_layout
+
+\begin_layout Standard
+Dataset final:
+ 145,553 registros con 17 clases distintas
+\end_layout
+
+\begin_layout Subsection
+Transformación de Variables
+\end_layout
+
+\begin_layout Standard
+Se aplicaron las siguientes transformaciones:
+\end_layout
+
+\begin_layout Standard
+Codificación de variables categóricas:
+ protocol_type,
+ service,
+ y flag mediante LabelEncoder
+\end_layout
+
+\begin_layout Standard
+Normalización:
+ StandardScaler para todas las 41 características numéricas
+\end_layout
+
+\begin_layout Standard
+División estratificada:
+ 70% entrenamiento (101,887),
+ 15% validación (21,833),
+ 15% prueba (21,833)
+\end_layout
+
+\begin_layout Subsection
+Desbalance de Clases
+\end_layout
+
+\begin_layout Standard
+El dataset presenta un severo desbalance,
+ con la clase U2R representando solo el 0.027% de las muestras.
+ Esta característica justifica:
+\end_layout
+
+\begin_layout Standard
+El uso de F1-score macro como métrica principal
+\end_layout
+
+\begin_layout Standard
+La necesidad de estratificación en la división de datos
+\end_layout
+
+\begin_layout Standard
+La consideración de pesos de clase en futuros modelos
+\end_layout
+
+\begin_layout Section
+Optimización con Optuna
+\end_layout
+
+\begin_layout Standard
+Para el proceso de optimización se empleó Optuna,
+ un framework flexible y eficiente que permite realizar la búsqueda automática de hiperparámetros mediante técnicas avanzadas como Tree-structured Parzen Estimator (TPE),
+ Grid Search adaptativa y Pruning dinámico.
+ Su principal ventaja radica en que abstrae gran parte de la complejidad de la optimización,
+ ofreciendo un conjunto de funciones que permiten estructurar,
+ ejecutar y analizar experimentos de manera sistemática.
+\end_layout
+
+\begin_layout Standard
+Funciones principales de Optuna
+\end_layout
+
+\begin_layout Standard
+Definición de espacios de búsqueda:
+\end_layout
+
+\begin_layout Standard
+A través de funciones como trial.suggest_int(),
+ trial.suggest_float(),
+ trial.suggest_categorical() o trial.suggest_loguniform(),
+ es posible especificar los rangos y distribuciones de los hiperparámetros.
+ Esto permite definir búsquedas discretas,
+ continuas o logarítmicas según el tipo de parámetro (por ejemplo,
+ número de capas,
+ tasa de aprendizaje,
+ profundidad máxima).
+\end_layout
+
+\begin_layout Standard
+Gestión de estudios y pruebas:
+\end_layout
+
+\begin_layout Standard
+La función optuna.create_study() permite inicializar un estudio indicando el sampler (algoritmo de búsqueda) y el pruner (criterio de parada anticipada).
+ Cada iteración de optimización se maneja como un trial,
+ donde Optuna registra automáticamente los parámetros evaluados y el valor de la métrica objetivo.
+\end_layout
+
+\begin_layout Standard
+Pruning dinámico:
+\end_layout
+
+\begin_layout Standard
+Con optuna.pruners.MedianPruner() u otros métodos como SuccessiveHalvingPruner,
+ se pueden detener de forma temprana aquellas configuraciones que muestran bajo rendimiento parcial,
+ ahorrando tiempo y recursos computacionales.
+ Esto resulta especialmente útil en modelos más costosos como FCN y TabNet.
+\end_layout
+
+\begin_layout Standard
+Visualización y análisis:
+\end_layout
+
+\begin_layout Standard
+Optuna incluye funciones de análisis integradas,
+ como optuna.visualization.plot_optimization_history() o optuna.visualization.plot_param_importances(),
+ que permiten entender el comportamiento del proceso de optimización,
+ identificar la convergencia y analizar qué hiperparámetros tienen mayor impacto en el desempeño del modelo.
+\end_layout
+
+\begin_layout Section
+Implementación de función para la división de datos
+\end_layout
+
+\begin_layout Standard
+Se implementó la función split_dataset,
+ la cual divide los datos en tres subconjuntos:
+ entrenamiento (70 %),
+ validación (15 %) y prueba (15 %).
+ Esta separación garantiza una evaluación adecuada del modelo,
+ permitiendo entrenar,
+ ajustar hiperparámetros y validar su rendimiento final de manera independiente.
+\end_layout
+
+\begin_layout Subsubsection*
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename /Users/luisbonilla/Developments/lbonilla-TEC_AD_HM2_RANDOMFOREST_NEURALNETWORK/Images/sec_0_splitDataset.png
+	width 100line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Función split_dataset
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Función Split Dataset"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
